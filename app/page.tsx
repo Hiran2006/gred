@@ -1,21 +1,37 @@
 import Image from "next/image";
 import logo from "@/public/logo.png";
 import house from "@/public/house.png";
+import Link from "next/link";
+import {
+  PlusCircleIcon,
+  ChatBubbleLeftIcon,
+  Cog6ToothIcon,
+  MagnifyingGlassIcon,
+  MapPinIcon,
+} from "@heroicons/react/24/outline";
 
 export default function Home() {
-  const houses = {
-    name: "House 1",
-    location: "kakkanad",
-    price: "1000",
-    status: 1,
-  };
-
   return (
-    <div className="flex flex-col items-center min-h-screen bg-gray-100">
-      <div className="flex justify-center items-center mt-8 mb-12">
+    <div className="flex flex-col items-center min-h-screen">
+      <div className="flex justify-center items-center mt-8 mb-10">
         <Image src={logo} alt="logo" width={180} />
       </div>
-
+      <div className="flex justify-between items-center align-center w-full max-w-6xl px-4 mb-8">
+        <div className="flex justify-between items-center rounded-3xl bg-amber-100 p-1 h-9">
+          <input
+            type="text"
+            placeholder="Search"
+            className="ml-3 placeholder:text-gray-500"
+          />
+          <MagnifyingGlassIcon className="w-6 text-gray-500 mr-1" />
+        </div>
+        <div>
+          <div className="w-30 bg-gray-200 h-9 rounded-3xl flex items-center justify-center text-gray-500">
+            <p>Location</p>
+            <MapPinIcon className="w-5 h-5 ml-2 text-gray-500" />
+          </div>
+        </div>
+      </div>
       <div className="w-full max-w-6xl px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Property Card 1 */}
@@ -53,6 +69,21 @@ export default function Home() {
               </button>
             </div>
           </div>
+        </div>
+      </div>
+      <div className="fixed bottom-0 w-full bg-white border-t-4 border-gray-600 py-2 xl:hidden">
+        <div className="max-w-screen-xl flex justify-evenly items-center">
+          <Link href="/chat" className="flex flex-col items-center">
+            <ChatBubbleLeftIcon className="w-15 text-black" />
+          </Link>
+
+          <Link href="/add" className="flex flex-col items-center">
+            <PlusCircleIcon className="w-20 text-black" />
+          </Link>
+
+          <Link href="/settings" className="flex flex-col items-center">
+            <Cog6ToothIcon className="w-15 text-black" />
+          </Link>
         </div>
       </div>
     </div>
