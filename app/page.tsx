@@ -12,7 +12,7 @@ import {
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center min-h-screen">
+    <div className="flex flex-col items-center min-h-screen pb-20">
       <div className="flex justify-center items-center mt-8 mb-10">
         <Image src={logo} alt="logo" width={180} />
       </div>
@@ -74,19 +74,27 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className="fixed bottom-0 w-full bg-white border-t-4 border-gray-600 py-2 xl:hidden">
-        <div className="max-w-screen-xl flex justify-evenly items-center">
-          <Link href="/chat" className="flex flex-col items-center">
-            <ChatBubbleLeftIcon className="w-15 text-black" />
-          </Link>
+      {/* Bottom Navigation Bar */}
+      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-3">
+        <div className="max-w-screen-xl mx-auto px-6">
+          <div className="flex justify-between items-center">
+            <Link href="/chat" className="flex flex-col items-center">
+              <ChatBubbleLeftIcon className="w-6 h-6 text-gray-500" />
+              <span className="text-xs mt-1 text-gray-500">Chat</span>
+            </Link>
 
-          <Link href="/add" className="flex flex-col items-center">
-            <PlusCircleIcon className="w-20 text-black" />
-          </Link>
+            <Link href="/add" className="flex flex-col items-center -mt-5">
+              <div className="bg-emerald-500 rounded-full p-3">
+                <PlusCircleIcon className="w-8 h-8 text-white" />
+              </div>
+              <span className="text-xs mt-1 text-gray-500">Add</span>
+            </Link>
 
-          <Link href="/settings" className="flex flex-col items-center">
-            <Cog6ToothIcon className="w-15 text-black" />
-          </Link>
+            <Link href="/settings" className="flex flex-col items-center">
+              <Cog6ToothIcon className="w-6 h-6 text-gray-500" />
+              <span className="text-xs mt-1 text-gray-500">Settings</span>
+            </Link>
+          </div>
         </div>
       </div>
     </div>
