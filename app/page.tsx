@@ -1,3 +1,7 @@
+"use client";
+import { useEffect } from "react";
+import cookieStore from "js-cookie";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import logo from "@/public/logo.png";
 import house from "@/public/house.png";
@@ -11,6 +15,15 @@ import {
 } from "@heroicons/react/24/outline";
 
 export default function Home() {
+  const router = useRouter();
+  useEffect(() => {
+    (async () => {
+      const token = cookieStore.get("token");
+      if (!token || token === "") {
+        router.push("/login");
+      }
+    })();
+  }, [router]);
   return (
     <div className="flex flex-col items-center min-h-screen pb-20">
       <div className="flex justify-center items-center mt-8 mb-10">
