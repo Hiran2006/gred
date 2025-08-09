@@ -5,6 +5,10 @@ import { User } from "@/app/generated/prisma";
 const JWT_SECRET = process.env.JWT_SECRET || "your-secret-key";
 const JWT_EXPIRES_IN = "7d"; // Token expires in 7 days
 
+if (!JWT_SECRET) {
+  console.info("JWT_SECRET is not defined, continue with default value");
+}
+
 type TokenPayload = {
   userId: number;
   email: string;

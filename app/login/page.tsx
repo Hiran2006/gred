@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import styles from "./login.module.css";
 
 type LoginError = {
   message: string;
@@ -53,72 +54,74 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
-      <div className="p-8 bg-white rounded-lg shadow-md w-full max-w-sm">
-        <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
-        {error && (
-          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-            {error.message}
-          </div>
-        )}
-        <form onSubmit={handleLogin}>
-          <div className="mb-4">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="email"
-            >
-              Email
+    <>
+      <div className={styles.wrapper}>
+        <h1>Login to GRED.</h1>
+        {error && <p className={styles.errorMessage}>{error.message}</p>}
+        <form className={styles.form} onSubmit={handleLogin}>
+          <div
+            className={`${styles.formGroup} ${
+              error?.field === "email" ? styles.incorrect : ""
+            }`}
+          >
+            <label htmlFor="email-input" className={styles.label}>
+              <span>@</span>
             </label>
             <input
-              className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
-                error?.field === "email" ? "border-red-500" : ""
-              }`}
-              id="email"
               type="email"
+              name="email"
+              id="email-input"
               placeholder="Email"
+              className={styles.input}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
               required
             />
           </div>
-          <div className="mb-6">
-            <label
-              className="block text-gray-700 text-sm font-bold mb-2"
-              htmlFor="password"
-            >
-              Password
+          <div
+            className={`${styles.formGroup} ${
+              error?.field === "password" ? styles.incorrect : ""
+            }`}
+          >
+            <label htmlFor="password-input" className={styles.label}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                height="24"
+                viewBox="0 -960 960 960"
+                width="24"
+              >
+                <path
+                  d="M240-80q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640h40v-80q0-83 58.5-141.5T480-920q83 0 141.5 58.5T680-720v80h40q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240Zm240-200q33 0 56.5-23.5T560-360q0-33-23.5-56.5T480-440q-33 0-56.5 23.5T400-360q0 33 23.5 56.5T480-280ZM360-640h240v-80q0-50-35-85t-85-35q-50 0-85 35t-35 85v80Z"
+                  fill="currentColor"
+                />
+              </svg>
             </label>
             <input
-              className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-1 leading-tight focus:outline-none focus:shadow-outline ${
-                error?.field === "password" ? "border-red-500" : ""
-              }`}
-              id="password"
               type="password"
-              placeholder="******************"
+              name="password"
+              id="password-input"
+              placeholder="Password"
+              className={styles.input}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={isLoading}
               required
               minLength={6}
             />
-            {error?.field === "password" && (
-              <p className="text-red-500 text-xs italic">{error.message}</p>
-            )}
           </div>
-          <div className="flex items-center justify-between mt-6">
-            <button
-              className={`bg-emerald-500 hover:bg-emerald-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${
-                isLoading ? "opacity-75 cursor-not-allowed" : ""
-              }`}
-              type="submit"
-              disabled={isLoading}
-            >
-              {isLoading ? "Signing in..." : "Sign In"}
-            </button>
-          </div>
+          <button type="submit" className={styles.button} disabled={isLoading}>
+            {isLoading ? "Logging in..." : "Login"}
+          </button>
         </form>
+        <p>
+          New here?{" "}
+          <a href="/signup" className={styles.link}>
+            Create an Account
+          </a>
+        </p>
       </div>
-    </div>
+      <div></div>
+    </>
   );
 }
