@@ -1,0 +1,40 @@
+/* Animation keyframes */
+@keyframes typing {
+  0%,
+  25% {
+    opacity: 1;
+  }
+  25.01%,
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Animation classes */
+.animateSpinSlow {
+  animation: spin-slow 8s linear infinite;
+}
+
+.animateTyping {
+  animation: typing 4s infinite;
+}
+
+/* Text stroke for the typing effect */
+.textStroke {
+  -webkit-text-stroke: 1px #7cf03d;
+}
+
+/* Animation delays for typing effect */
+.typingDelay1 { animation-delay: 0s; }
+.typingDelay2 { animation-delay: -4s; }
+.typingDelay3 { animation-delay: -8s; }
+.typingDelay4 { animation-delay: -12s; }

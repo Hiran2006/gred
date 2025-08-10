@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./login.module.css";
+import Image from "next/image";
+import bgImage from "@/public/background.png";
 
 type LoginError = {
   message: string;
@@ -54,7 +56,7 @@ export default function LoginPage() {
   };
 
   return (
-    <>
+    <div className="flex items-center bg-amber-100">
       <div className={styles.wrapper}>
         <h1>Login to GRED.</h1>
         {error && <p className={styles.errorMessage}>{error.message}</p>}
@@ -121,6 +123,9 @@ export default function LoginPage() {
           </a>
         </p>
       </div>
-    </>
+      <div className="lg:flex justify-center items-center hidden lg:w-1/2">
+        <Image src={bgImage} alt="Background Image" width={400} />
+      </div>
+    </div>
   );
 }
