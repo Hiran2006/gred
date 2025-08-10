@@ -43,7 +43,7 @@ export default function LoginPage() {
       localStorage.setItem("user", JSON.stringify(data.user));
 
       // Redirect to home page
-      router.push("/");
+      router.push("/home");
       router.refresh();
     } catch (err) {
       setError({

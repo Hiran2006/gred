@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import styles from "./animations.module.css";
 import logo from "@/public/logo_white.png";
 
 export default function Home() {
@@ -24,9 +23,7 @@ export default function Home() {
           isMounted ? "opacity-100" : "opacity-0"
         }`}
       >
-        <Link href="#" className="text-3xl font-bold">
-          GRED.
-        </Link>
+        <h2 className="text-3xl font-bold">GRED.</h2>
         <ul className="flex gap-9">
           <li>
             <Link
@@ -54,9 +51,7 @@ export default function Home() {
           <div className="relative w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 mx-auto">
             <div className="absolute inset-0 rounded-full p-1 bg-[#1f242d]">
               <div className="relative w-full h-full rounded-full overflow-hidden border border-[#1f242d] bg-[#1f242d] flex items-center justify-center">
-                <div
-                  className={`absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-[#7cf03d] to-transparent opacity-0 ${styles.animateSpinSlow}`}
-                ></div>
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-[#7cf03d] to-transparent opacity-0 animate-spin-slow"></div>
                 <Image
                   src={logo}
                   alt="GRED"
@@ -82,11 +77,12 @@ export default function Home() {
               {actionWords.map((word, index) => (
                 <span
                   key={index}
-                  className={`absolute ${styles.animateTyping} ${
-                    styles[`typingDelay${index + 1}`]
-                  }`}
+                  className={`absolute animate-typing text-transparent [text-stroke:1px_#7cf03d]`}
                   style={{
-                    WebkitTextStroke: "1px #7cf03d",
+                    animationDelay: `${index * 2}s`,
+                    animationDuration: "8s",
+                    animationIterationCount: "infinite",
+                    opacity: 0,
                   }}
                 >
                   {word}
