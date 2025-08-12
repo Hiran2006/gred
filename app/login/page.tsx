@@ -1,10 +1,11 @@
 "use client";
-
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./login.module.css";
 import Image from "next/image";
 import bgImage from "@/public/background.png";
+import { FcGoogle } from "react-icons/fc";
+import supabase from "@/lib/supabase";
 
 type LoginError = {
   message: string;
@@ -22,36 +23,21 @@ export default function LoginPage() {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
+  };
 
+  const handleGoogleLogin = async () => {
     try {
-      const response = await fetch("/api/user/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: "http://localhost:3000/home",
         },
-        body: JSON.stringify({ email, password }),
       });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Login failed");
+      if (error) {
+        console.error("Google login error:", error);
       }
-
-      // Save token and user data
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.user));
-
-      // Redirect to home page
-      router.push("/home");
-      router.refresh();
-    } catch (err) {
-      setError({
-        message:
-          err instanceof Error ? err.message : "An error occurred during login",
-      });
-    } finally {
-      setIsLoading(false);
+    } catch (error) {
+      console.error("Google login error:", error);
     }
   };
 
@@ -116,7 +102,21 @@ export default function LoginPage() {
             {isLoading ? "Logging in..." : "Login"}
           </button>
         </form>
-        <p>
+
+        <div className={styles.divider}>
+          <span>or</span>
+        </div>
+
+        <button
+          className={`${styles.button} ${styles.googleButton}`}
+          type="button"
+          onClick={handleGoogleLogin}
+        >
+          <FcGoogle className={styles.googleIcon} />
+          Continue with Google
+        </button>
+
+        <p className={styles.signupLink}>
           New here?{" "}
           <a href="/signup" className={styles.link}>
             Create an Account
