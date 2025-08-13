@@ -30,7 +30,7 @@ export default function Home() {
               href="/login"
               className="text-lg font-medium text-slate-700 hover:text-emerald-600 transition-colors"
             >
-              HOME
+              LOGIN
             </Link>
           </li>
           <li>

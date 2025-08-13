@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { Provider } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import styles from "./login.module.css";
 import Image from "next/image";
@@ -23,18 +24,35 @@ export default function LoginPage() {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+    if (error) {
+      setError({
+        message: error.message,
+        field: error.code === "PGRST116" ? "email" : "password",
+      });
+      setIsLoading(false);
+    } else {
+      router.push("/home");
+    }
   };
 
-  const handleGoogleLogin = async () => {
+  const handleOAuth = async (provider: Provider) => {
     try {
       const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
+        provider,
         options: {
           redirectTo: "http://localhost:3000/home",
         },
       });
       if (error) {
-        console.error("Google login error:", error);
+        setError({
+          message: error.message,
+          field: error.code === "PGRST116" ? "email" : "provider",
+        });
+        setIsLoading(false);
       }
     } catch (error) {
       console.error("Google login error:", error);
@@ -110,7 +128,7 @@ export default function LoginPage() {
         <button
           className={`${styles.button} ${styles.googleButton}`}
           type="button"
-          onClick={handleGoogleLogin}
+          onClick={() => handleOAuth("google")}
         >
           <FcGoogle className={styles.googleIcon} />
           Continue with Google
