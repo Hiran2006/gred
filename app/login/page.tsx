@@ -1,12 +1,11 @@
 "use client";
 import { useState } from "react";
-import { Provider } from "@supabase/supabase-js";
 import { useRouter } from "next/navigation";
 import styles from "./login.module.css";
 import Image from "next/image";
 import bgImage from "@/public/background.png";
-import { FcGoogle } from "react-icons/fc";
 import supabase from "@/lib/supabase";
+import GoogleAuthButton from "@/components/GoogleAuthButton";
 
 type LoginError = {
   message: string;
@@ -21,6 +20,7 @@ export default function LoginPage() {
   const router = useRouter();
 
   const handleLogin = async (e: React.FormEvent) => {
+    console.log(window.location.origin + "/home");
     e.preventDefault();
     setError(null);
     setIsLoading(true);
@@ -34,28 +34,6 @@ export default function LoginPage() {
         field: error.code === "PGRST116" ? "email" : "password",
       });
       setIsLoading(false);
-    } else {
-      router.push("/home");
-    }
-  };
-
-  const handleOAuth = async (provider: Provider) => {
-    try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider,
-        options: {
-          redirectTo: "http://localhost:3000/home",
-        },
-      });
-      if (error) {
-        setError({
-          message: error.message,
-          field: error.code === "PGRST116" ? "email" : "provider",
-        });
-        setIsLoading(false);
-      }
-    } catch (error) {
-      console.error("Google login error:", error);
     }
   };
 
@@ -125,14 +103,11 @@ export default function LoginPage() {
           <span>or</span>
         </div>
 
-        <button
-          className={`${styles.button} ${styles.googleButton}`}
-          type="button"
-          onClick={() => handleOAuth("google")}
-        >
-          <FcGoogle className={styles.googleIcon} />
-          Continue with Google
-        </button>
+        <GoogleAuthButton
+          isLoading={isLoading}
+          onSuccess={() => router.push("/home")}
+          onError={(error) => setError(error)}
+        />
 
         <p className={styles.signupLink}>
           New here?{" "}

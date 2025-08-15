@@ -1,6 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import cookieStore from "js-cookie";
+import queryString from "query-string";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import logo from "@/public/logo_black.png";
@@ -18,8 +19,11 @@ export default function Home() {
   const router = useRouter();
   useEffect(() => {
     (async () => {
-      const token = cookieStore.get("token");
-      if (!token || token === "") {
+      const access_token = queryString.parse(window.location.hash)
+        .access_token as string;
+      if (access_token != "") {
+        cookieStore.set("token", access_token);
+      } else {
         router.push("/login");
       }
     })();

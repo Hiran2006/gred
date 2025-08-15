@@ -20,7 +20,7 @@
 
 .form {
   width: min(400px, 100%);
-  margin: 20px 0 50px;
+  margin: 20px 0 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -130,14 +130,14 @@
   align-items: center;
   text-align: center;
   width: 100%;
-  margin: 1.5rem 0;
+  margin: 0.5rem 0;
   color: var(--text-color);
   opacity: 0.7;
 }
 
 .divider::before,
 .divider::after {
-  content: '';
+  content: "";
   flex: 1;
   border-bottom: 1px solid var(--input-color);
 }
@@ -181,7 +181,8 @@
     width: min(1000px, 100%);
     border-radius: 0;
   }
-  .button, .googleButton {
+  .button,
+  .googleButton {
     width: 100%;
     border-radius: 10px;
   }
