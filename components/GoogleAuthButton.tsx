@@ -27,7 +27,7 @@ export default function GoogleAuthButton({
       const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: window.location.origin + "/home",
+          redirectTo: window.location.origin + "/dashboard/home",
         },
       });
 
