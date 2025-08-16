@@ -85,29 +85,24 @@ export default function AddProperty() {
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Listing Type
             </label>
-            <div className="flex space-x-6">
-              <label className="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="listingType"
-                  value="rent"
-                  checked={formData.listingType === "rent"}
-                  onChange={handleChange}
-                  className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300"
-                />
-                <span className="ml-2 text-gray-700">For Rent</span>
-              </label>
-              <label className="inline-flex items-center">
-                <input
-                  type="radio"
-                  name="listingType"
-                  value="sell"
-                  checked={formData.listingType === "sell"}
-                  onChange={handleChange}
-                  className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300"
-                />
-                <span className="ml-2 text-gray-700">For Sale</span>
-              </label>
+            <div className="relative flex items-center justify-between w-48 h-12 bg-gray-100 rounded-full p-1">
+              <span 
+                className={`absolute left-1 right-1/2 h-10 rounded-full bg-white shadow-md transform transition-transform duration-300 ease-in-out ${formData.listingType === 'rent' ? 'translate-x-0' : 'translate-x-full'}`}
+              />
+              <button
+                type="button"
+                onClick={() => setFormData(prev => ({ ...prev, listingType: 'rent' }))}
+                className={`relative z-10 w-1/2 h-full flex items-center justify-center text-sm font-medium transition-colors duration-200 ${formData.listingType === 'rent' ? 'text-amber-600' : 'text-gray-500'}`}
+              >
+                For Rent
+              </button>
+              <button
+                type="button"
+                onClick={() => setFormData(prev => ({ ...prev, listingType: 'sell' }))}
+                className={`relative z-10 w-1/2 h-full flex items-center justify-center text-sm font-medium transition-colors duration-200 ${formData.listingType === 'sell' ? 'text-amber-600' : 'text-gray-500'}`}
+              >
+                For Sale
+              </button>
             </div>
           </div>
 
