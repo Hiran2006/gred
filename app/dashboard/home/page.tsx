@@ -15,8 +15,6 @@ export default function Home() {
         .access_token as string;
       if (access_token != "") {
         cookieStore.set("token", access_token);
-      } else {
-        router.push("/login");
       }
     })();
   }, [router]);
