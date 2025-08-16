@@ -100,9 +100,9 @@ export default function Home() {
               <span className="text-xs mt-1 text-gray-500">Chat</span>
             </Link>
 
-            <Link href="/add" className="flex flex-col items-center -mt-5">
-              <div className="bg-emerald-500 rounded-full p-3">
-                <PlusCircleIcon className="w-8 h-8 text-white" />
+            <Link href="/add" className="flex flex-col items-center -mt-12">
+              <div className="bg-white rounded-full p-3 border border-gray-300">
+                <PlusCircleIcon className="w-8 h-8 text-black" />
               </div>
               <span className="text-xs mt-1 text-gray-500">Add</span>
             </Link>

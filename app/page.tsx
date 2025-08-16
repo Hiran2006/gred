@@ -1,28 +1,14 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import logo from "@/public/logo_black.png";
 
 export default function Home() {
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
   const actionWords = ["RENT", "SELL", "BUY", "REQUEST"];
-  const barCount = 6;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 text-slate-900 relative overflow-hidden">
       {/* Navbar */}
-      <nav
-        className={`fixed top-0 left-0 w-full py-4 px-[9%] bg-white bg-opacity-80 backdrop-blur-sm shadow-sm flex justify-between items-center z-50 transition-opacity duration-500 ${
-          isMounted ? "opacity-100" : "opacity-0"
-        }`}
-      >
+      <nav className="fixed top-0 left-0 w-full py-4 px-[9%] bg-white bg-opacity-80 backdrop-blur-sm shadow-sm flex justify-between items-center z-50 transition-opacity duration-500">
         <h2 className="text-3xl font-bold text-gray-800">GRED.</h2>
         <ul className="flex gap-9">
           <li>
@@ -49,18 +35,15 @@ export default function Home() {
         {/* Image Section */}
         <div className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl mb-12 lg:mb-0 lg:mr-12">
           <div className="relative w-64 h-64 sm:w-72 sm:h-72 md:w-80 md:h-80 mx-auto">
-            <div className="absolute inset-0 rounded-full p-1 bg-white shadow-md">
-              <div className="relative w-full h-full rounded-full overflow-hidden border-2 border-slate-200 bg-white flex items-center justify-center">
-                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-emerald-500 to-transparent opacity-0 animate-spin-slow"></div>
-                <Image
-                  src={logo}
-                  alt="GRED"
-                  width={300}
-                  height={300}
-                  className="relative z-10 w-4/5 h-auto"
-                  priority
-                />
-              </div>
+            <div className="relative w-full h-full rounded-full overflow-hidden border-2 border-slate-200 bg-white flex items-center justify-center p-1">
+              <Image
+                src={logo}
+                alt="GRED"
+                width={300}
+                height={300}
+                className="w-4/5 h-auto"
+                priority
+              />
             </div>
           </div>
         </div>
