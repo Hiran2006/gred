@@ -4,16 +4,9 @@ import cookieStore from "js-cookie";
 import queryString from "query-string";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import logo from "@/public/logo_black.png";
 import house from "@/public/house.png";
-import Link from "next/link";
-import {
-  PlusCircleIcon,
-  ChatBubbleLeftIcon,
-  Cog6ToothIcon,
-  MagnifyingGlassIcon,
-  MapPinIcon,
-} from "@heroicons/react/24/outline";
+import BottomNavigation from "@/components/BottomNavigation";
+import Header from "@/components/Header";
 
 export default function Home() {
   const router = useRouter();
@@ -30,28 +23,7 @@ export default function Home() {
   }, [router]);
   return (
     <div className="flex flex-col items-center min-h-screen pb-20">
-      <div className="flex justify-center items-center mt-8 mb-10">
-        <Image src={logo} alt="logo" width={180} />
-      </div>
-      <div className="flex justify-center items-center w-full max-w-2xl px-4 mb-8 gap-4">
-        <div className="flex-1">
-          <div className="flex justify-between items-center rounded-3xl bg-amber-100 p-1 h-9 w-full">
-            <input
-              type="text"
-              placeholder="Search"
-              className="ml-3 placeholder:text-gray-500 bg-transparent outline-none w-full"
-            />
-            <MagnifyingGlassIcon className="w-6 text-gray-500 mr-1 flex-shrink-0" />
-          </div>
-        </div>
-
-        <div className="flex-shrink-0">
-          <div className="bg-gray-200 h-9 rounded-3xl flex items-center justify-center text-gray-500 px-4">
-            <p>Location</p>
-            <MapPinIcon className="w-5 h-5 ml-2 text-gray-500" />
-          </div>
-        </div>
-      </div>
+      <Header />
       <div className="w-full max-w-6xl px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Property Card 1 */}
@@ -91,29 +63,7 @@ export default function Home() {
           </div>
         </div>
       </div>
-      {/* Bottom Navigation Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 py-3">
-        <div className="max-w-screen-xl mx-auto px-6">
-          <div className="flex justify-between items-center">
-            <Link href="/chat" className="flex flex-col items-center">
-              <ChatBubbleLeftIcon className="w-6 h-6 text-gray-500" />
-              <span className="text-xs mt-1 text-gray-500">Chat</span>
-            </Link>
-
-            <Link href="/add" className="flex flex-col items-center -mt-12">
-              <div className="bg-white rounded-full p-3 border border-gray-300">
-                <PlusCircleIcon className="w-8 h-8 text-black" />
-              </div>
-              <span className="text-xs mt-1 text-gray-500">Add</span>
-            </Link>
-
-            <Link href="/settings" className="flex flex-col items-center">
-              <Cog6ToothIcon className="w-6 h-6 text-gray-500" />
-              <span className="text-xs mt-1 text-gray-500">Settings</span>
-            </Link>
-          </div>
-        </div>
-      </div>
+      <BottomNavigation />
     </div>
   );
 }
