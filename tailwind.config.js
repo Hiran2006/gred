@@ -8,14 +8,14 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        accent: '#03c4ff',
-        text: '#2E2B41',
-        input: '#F3F0FF',
+        accent: "#03c4ff",
+        text: "#2E2B41",
+        input: "#F3F0FF",
       },
       fontFamily: {
-        sans: ['Poppins', 'sans-serif'],
+        sans: ["Poppins", "sans-serif"],
       },
     },
   },
   plugins: [],
-}
+};

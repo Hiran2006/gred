@@ -63,7 +63,6 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <BottomNavigation />
     </div>
   );
 }
