@@ -5,7 +5,6 @@ import queryString from "query-string";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import house from "@/public/house.png";
-import BottomNavigation from "@/components/BottomNavigation";
 import Header from "@/components/Header";
 
 export default function Home() {

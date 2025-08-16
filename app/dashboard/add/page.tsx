@@ -2,7 +2,6 @@
 
 import { useState, useRef, ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
-import BottomNavigation from "@/components/BottomNavigation";
 import ImagePreview from "@/components/ImagePreview";
 
 export default function AddProperty() {
