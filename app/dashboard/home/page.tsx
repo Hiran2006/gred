@@ -1,23 +1,9 @@
 "use client";
-import { useEffect } from "react";
-import cookieStore from "js-cookie";
-import queryString from "query-string";
-import { useRouter } from "next/navigation";
 import Image from "next/image";
 import house from "@/public/house.png";
 import Header from "@/components/Header";
 
 export default function Home() {
-  const router = useRouter();
-  useEffect(() => {
-    (async () => {
-      const access_token = queryString.parse(window.location.hash)
-        .access_token as string;
-      if (access_token != "") {
-        cookieStore.set("token", access_token);
-      }
-    })();
-  }, [router]);
   return (
     <div className="flex flex-col items-center min-h-screen pb-20">
       <Header />
