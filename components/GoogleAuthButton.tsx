@@ -24,20 +24,24 @@ export default function GoogleAuthButton({
   const handleOAuth = async (provider: Provider) => {
     setButtonLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: window.location.origin + "/dashboard/home",
+          redirectTo: `${window.location.origin}/dashboard`,
+          queryParams: {
+            access_type: "offline",
+            prompt: "consent",
+          },
         },
       });
 
       if (error) {
-        const errorData = {
-          message: error.message,
-          field: error.status === 400 ? "email" : "provider",
-        };
-        onError?.(errorData);
+        throw error;
       }
+
+      // The OAuth flow will handle the redirection
+      // The middleware will take care of the rest
+      onSuccess?.();
     } catch (error) {
       console.error("Google auth error:", error);
       onError?.({
