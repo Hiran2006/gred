@@ -27,7 +27,7 @@ export default function GoogleAuthButton({
       const { data, error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
-          redirectTo: `${window.location.origin}/dashboard`,
+          redirectTo: `${window.location.origin}/dashboard/home`,
           queryParams: {
             access_type: "offline",
             prompt: "consent",
