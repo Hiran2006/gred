@@ -28,10 +28,6 @@ export default function GoogleAuthButton({
         provider,
         options: {
           redirectTo: `${window.location.origin}/dashboard/home`,
-          queryParams: {
-            access_type: "offline",
-            prompt: "consent",
-          },
         },
       });
 
