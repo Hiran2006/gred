@@ -3,6 +3,7 @@
 import { useState, useRef, ChangeEvent } from "react";
 import { useRouter } from "next/navigation";
 import ImagePreview from "@/components/ImagePreview";
+import BottomNavbar from "@/components/BottomNavigation";
 
 export default function AddProperty() {
   const router = useRouter();
@@ -193,6 +194,7 @@ export default function AddProperty() {
           </button>
         </div>
       </form>
+      <BottomNavbar />
     </div>
   );
 }

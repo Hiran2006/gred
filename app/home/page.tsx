@@ -2,6 +2,7 @@
 import Image from "next/image";
 import house from "@/public/house.png";
 import Header from "@/components/Header";
+import BottomNavbar from "@/components/BottomNavigation";
 
 export default function Home() {
   return (
@@ -46,6 +47,7 @@ export default function Home() {
           </div>
         </div>
       </div>
+      <BottomNavbar />
     </div>
   );
 }
