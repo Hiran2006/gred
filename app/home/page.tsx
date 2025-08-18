@@ -1,5 +1,3 @@
-"use client";
-
 import Image from "next/image";
 import house from "@/public/house.png";
 import Header from "@/components/Header";
