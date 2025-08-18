@@ -1,3 +1,4 @@
+"use client";
 import BottomNavbar from "@/components/BottomNavigation";
 export default function DashboardLayout({
   children,
