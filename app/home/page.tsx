@@ -1,4 +1,5 @@
 "use client";
+
 import Image from "next/image";
 import house from "@/public/house.png";
 import Header from "@/components/Header";
@@ -10,7 +11,6 @@ export default function Home() {
       <Header />
       <div className="w-full max-w-6xl px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {/* Property Card 1 */}
           <div className="bg-white rounded-lg shadow-lg overflow-hidden">
             <div className="relative h-48">
               <Image
