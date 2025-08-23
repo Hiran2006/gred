@@ -56,19 +56,23 @@ export default function SignupPage() {
   return (
     <div className="flex min-h-screen bg-amber-100">
       <div className="box-border bg-white h-screen w-full max-w-[600px] p-2.5 rounded-r-[20px] flex flex-col items-center justify-center">
-        <h1 className="text-5xl font-black uppercase text-gray-800 mb-8">Create an account</h1>
+        <h1 className="text-5xl font-black uppercase text-gray-800 mb-8">
+          Create an account
+        </h1>
         {error && (
           <p className="w-full max-w-[400px] text-red-500 text-sm mb-4 text-center">
             {error.message}
           </p>
         )}
-        <form 
-          className="w-full max-w-[400px] my-5 mx-0 flex flex-col items-center gap-2.5" 
+        <form
+          className="w-full max-w-[400px] my-5 mx-0 flex flex-col items-center gap-2.5"
           onSubmit={handleSignup}
         >
-          <div className={`w-full flex justify-center ${
-            error?.field === "email" ? 'border-red-500' : ''
-          }`}>
+          <div
+            className={`w-full flex justify-center ${
+              error?.field === "email" ? "border-red-500" : ""
+            }`}
+          >
             <div className="flex-shrink-0 h-[50px] w-[50px] bg-amber-400 text-white rounded-l-[10px] flex justify-center items-center text-2xl font-medium">
               @
             </div>
@@ -84,9 +88,11 @@ export default function SignupPage() {
             />
           </div>
 
-          <div className={`w-full flex justify-center ${
-            error?.field === "password" ? 'border-red-500' : ''
-          }`}>
+          <div
+            className={`w-full flex justify-center ${
+              error?.field === "password" ? "border-red-500" : ""
+            }`}
+          >
             <div className="flex-shrink-0 h-[50px] w-[50px] bg-amber-400 text-white rounded-l-[10px] flex justify-center items-center text-2xl font-medium">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -110,9 +116,11 @@ export default function SignupPage() {
             />
           </div>
 
-          <div className={`w-full flex justify-center ${
-            error?.field === "confirmPassword" ? 'border-red-500' : ''
-          }`}>
+          <div
+            className={`w-full flex justify-center ${
+              error?.field === "confirmPassword" ? "border-red-500" : ""
+            }`}
+          >
             <div className="flex-shrink-0 h-[50px] w-[50px] bg-amber-400 text-white rounded-l-[10px] flex justify-center items-center text-2xl font-medium">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -157,9 +165,12 @@ export default function SignupPage() {
 
         <p className="mt-2.5 text-gray-600">
           Already have an account?{" "}
-          <a href="/login" className="text-amber-500 font-semibold hover:underline">
+          <Link
+            href="/login"
+            className="text-amber-500 font-semibold hover:underline"
+          >
             Log in
-          </a>
+          </Link>
         </p>
       </div>
       <div className="hidden lg:flex justify-center items-center lg:w-1/2">
