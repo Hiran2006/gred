@@ -92,7 +92,7 @@ export default function PropertyList({
             title={post.title}
             location={post.location}
             post_type={post.post_type}
-            imageUrl={post.picture_url}
+            imageUrl={post.picture_url+"/img1.jpeg"}
             onRequest={() => handleRequest(post.post_id)}
           />
         ))}

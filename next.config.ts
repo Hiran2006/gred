@@ -4,7 +4,9 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  /* config options here */
+  images:{
+    remotePatterns:[new URL("https://sqhgtcyhscqhamwquhhu.supabase.co/**")]
+  }
 };
 
 export default nextConfig;
