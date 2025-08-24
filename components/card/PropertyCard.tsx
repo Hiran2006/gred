@@ -1,11 +1,12 @@
 "use client";
 import Image from "next/image";
+import { useState } from "react";
 
 type PropertyCardProps = {
   id: number;
   title: string;
   location: string;
-  post_type: 'rent' | 'sell';
+  post_type: "rent" | "sell";
   imageUrl: string;
   onRequest?: () => void;
 };
@@ -18,16 +19,20 @@ export default function PropertyCard({
   imageUrl,
   onRequest,
 }: PropertyCardProps) {
+  const [imageError, setImageError] = useState(false);
   return (
     <div key={id} className="bg-white rounded-xl shadow-md overflow-hidden">
       <div className="relative h-48">
-        <Image
-          src={imageUrl}
-          alt={title}
-          fill
-          className="object-cover"
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-        />
+        {!imageError || (
+          <Image
+            src={imageUrl}
+            alt={title}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            onError={() => setImageError(true)}
+          />
+        )}
       </div>
       <div className="p-4">
         <h3 className="text-2xl font-semibold mb-2">{title}</h3>
@@ -38,7 +43,7 @@ export default function PropertyCard({
           <span>{location}</span>
         </div>
         <div className="text-2xl font-bold text-gray-900 mb-4">
-          For {post_type === 'rent' ? 'Rent' : 'Sale'}
+          For {post_type === "rent" ? "Rent" : "Sale"}
         </div>
         <button
           onClick={onRequest}
