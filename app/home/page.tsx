@@ -4,7 +4,7 @@ import BottomNavbar from "@/components/BottomNavigation";
 import PropertyList from "@/components/PropertyList";
 
 export default function Home() {
-  const handleRequestProperty = (id: string) => {
+  const handleRequestProperty = (id: number) => {
     console.log("Request property:", id);
     // Add your request logic here
   };

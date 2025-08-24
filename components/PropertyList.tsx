@@ -4,17 +4,19 @@ import PropertyCard from "./PropertyCard";
 import { supabase } from "@/lib/supabase";
 
 type Post = {
-  id: string;
+  post_id: number;
   title: string;
+  content: string;
+  post_type: 'rent' | 'sell';
+  post_date: string;
   location: string;
-  price: number;
-  image_url: string;
-  created_at: string;
+  picture_url: string;
+  user_id: string;
 };
 
 type PropertyListProps = {
   className?: string;
-  onRequestProperty?: (id: string) => void;
+  onRequestProperty?: (id: number) => void;
 };
 
 export default function PropertyList({
@@ -30,9 +32,9 @@ export default function PropertyList({
       try {
         setLoading(true);
         const { data, error } = await supabase
-          .from("post")
+          .from("posts")
           .select("*")
-          .order("created_at", { ascending: false });
+          .order("post_date", { ascending: true });
 
         if (error) throw error;
 
@@ -48,7 +50,7 @@ export default function PropertyList({
     loadPosts();
   }, []);
 
-  const handleRequest = (id: string) => {
+  const handleRequest = (id: number) => {
     if (onRequestProperty) {
       onRequestProperty(id);
     }
@@ -85,13 +87,13 @@ export default function PropertyList({
       >
         {posts.map((post) => (
           <PropertyCard
-            key={post.id}
-            id={post.id}
+            key={post.post_id}
+            id={post.post_id}
             title={post.title}
             location={post.location}
-            price={post.price}
-            imageUrl={post.image_url}
-            onRequest={() => handleRequest(post.id)}
+            post_type={post.post_type}
+            imageUrl={post.picture_url}
+            onRequest={() => handleRequest(post.post_id)}
           />
         ))}
       </div>

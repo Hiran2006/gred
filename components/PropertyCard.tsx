@@ -2,10 +2,10 @@
 import Image from "next/image";
 
 type PropertyCardProps = {
-  id: string;
+  id: number;
   title: string;
   location: string;
-  price: string | number;
+  post_type: 'rent' | 'sell';
   imageUrl: string;
   onRequest?: () => void;
 };
@@ -14,7 +14,7 @@ export default function PropertyCard({
   id,
   title,
   location,
-  price,
+  post_type,
   imageUrl,
   onRequest,
 }: PropertyCardProps) {
@@ -38,7 +38,7 @@ export default function PropertyCard({
           <span>{location}</span>
         </div>
         <div className="text-2xl font-bold text-gray-900 mb-4">
-          ${price.toLocaleString()}
+          For {post_type === 'rent' ? 'Rent' : 'Sale'}
         </div>
         <button
           onClick={onRequest}
