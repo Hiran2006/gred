@@ -5,7 +5,7 @@ import Image from "next/image";
 import bgImage from "@/public/background.png";
 import Link from "next/link";
 import supabase from "@/lib/supabase";
-import GoogleAuthButton from "@/components/GoogleAuthButton";
+import GoogleAuthButton from "@/components/auth/GoogleAuthButton";
 
 type SignupError = {
   message: string;

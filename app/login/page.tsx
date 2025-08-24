@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import bgImage from "@/public/background.png";
 import supabase from "@/lib/supabase";
-import GoogleAuthButton from "@/components/GoogleAuthButton";
+import GoogleAuthButton from "@/components/auth/GoogleAuthButton";
 
 type LoginError = {
   message: string;
@@ -41,7 +41,9 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen bg-amber-100">
       <div className="box-border bg-white h-screen w-full max-w-[600px] p-2.5 rounded-r-[20px] flex flex-col items-center justify-center">
-        <h1 className="text-5xl font-black uppercase text-gray-800 mb-8">Login to GRED.</h1>
+        <h1 className="text-5xl font-black uppercase text-gray-800 mb-8">
+          Login to GRED.
+        </h1>
         {error && (
           <p className="w-full max-w-[400px] text-red-500 text-sm mb-4 text-center">
             {error.message}

@@ -1,7 +1,7 @@
 "use client";
-import Header from "@/components/Header";
-import BottomNavbar from "@/components/BottomNavigation";
-import PropertyList from "@/components/PropertyList";
+import Header from "@/components/nav bar/Header";
+import BottomNavbar from "@/components/nav bar/BottomNavigation";
+import PropertyList from "@/components/card/PropertyList";
 
 export default function Home() {
   const handleRequestProperty = (id: number) => {
