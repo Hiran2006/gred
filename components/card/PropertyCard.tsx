@@ -49,7 +49,8 @@ export default function PropertyCard({
           onClick={onRequest}
           className="w-full bg-emerald-500 text-white py-2 rounded-lg hover:bg-emerald-600 transition-colors"
         >
-          REQUEST
+          Add to Cart
+          {/* {post_type === "rent" ? "Rent" : "Buy"} */}
         </button>
       </div>
     </div>
