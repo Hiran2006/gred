@@ -11,6 +11,8 @@ export default function AddProperty() {
     name: "",
     description: "",
     listingType: "rent", // 'rent' or 'sell'
+    price: "",
+    pricePerDay: "",
     images: [] as string[],
   });
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -25,8 +27,7 @@ export default function AddProperty() {
     }));
   };
 
-  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
+  const handleImageChange = (files: FileList | null) => {
     if (!files) return;
 
     const newImages = Array.from(files).map((file) => {
@@ -37,6 +38,27 @@ export default function AddProperty() {
       ...prev,
       images: [...prev.images, ...newImages],
     }));
+  };
+
+  const handleFileInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    handleImageChange(e.target.files);
+    if (e.target) {
+      e.target.value = ""; // Reset input to allow selecting the same file again
+    }
+  };
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      handleImageChange(e.dataTransfer.files);
+    }
   };
 
   const removeImage = (index: number) => {
@@ -140,46 +162,105 @@ export default function AddProperty() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Add Images
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              {formData.listingType === "rent"
+                ? "Rent (Monthly/Daily)"
+                : "Selling Price"}
             </label>
-            <div className="flex items-center justify-center w-full">
-              <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
-                <div className="flex flex-col items-center justify-center pt-5 pb-6">
-                  <svg
-                    className="w-8 h-8 mb-4 text-gray-500"
-                    aria-hidden="true"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 20 16"
-                  >
-                    <path
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
-                    />
-                  </svg>
-                  <p className="mb-2 text-sm text-gray-500">
-                    <span className="font-semibold">Click to upload</span> or
-                    drag and drop
-                  </p>
-                  <p className="text-xs text-gray-500">PNG, JPG (MAX. 5MB)</p>
+            {formData.listingType === "rent" ? (
+              <div className="grid grid-cols-2 gap-4">
+                <div className="relative rounded-md shadow-sm">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span className="text-gray-500 sm:text-sm">₹</span>
+                  </div>
+                  <input
+                    type="number"
+                    name="price"
+                    value={formData.price}
+                    onChange={handleChange}
+                    className="w-full pl-7 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                    placeholder="Monthly"
+                    required
+                    min="0"
+                  />
+                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <span className="text-gray-500 text-xs">/month</span>
+                  </div>
+                </div>
+                <div className="relative rounded-md shadow-sm">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <span className="text-gray-500 sm:text-sm">₹</span>
+                  </div>
+                  <input
+                    type="number"
+                    name="pricePerDay"
+                    value={formData.pricePerDay}
+                    onChange={handleChange}
+                    className="w-full pl-7 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                    placeholder="Daily (Optional)"
+                    min="0"
+                  />
+                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                    <span className="text-gray-500 text-xs">/day</span>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="relative rounded-md shadow-sm">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <span className="text-gray-500 sm:text-sm">₹</span>
                 </div>
                 <input
-                  id="dropzone-file"
-                  type="file"
-                  className="hidden"
-                  accept="image/*"
-                  multiple
-                  onChange={handleImageChange}
-                  ref={fileInputRef}
+                  type="number"
+                  name="price"
+                  value={formData.price}
+                  onChange={handleChange}
+                  className="w-full pl-7 pr-12 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                  placeholder="e.g. 5000000"
+                  required
+                  min="0"
                 />
-              </label>
-            </div>
+              </div>
+            )}
+          </div>
 
-            {/* Image preview */}
+          <div className="mt-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Property Images
+            </label>
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileInputChange}
+              className="hidden"
+              accept="image/*"
+              multiple
+            />
+            <div
+              onDragOver={handleDragOver}
+              onDrop={handleDrop}
+              onClick={() => fileInputRef.current?.click()}
+              className="w-full p-4 border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center text-gray-500 hover:border-amber-500 hover:text-amber-600 transition-colors cursor-pointer"
+            >
+              <svg
+                className="w-8 h-8 mb-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                />
+              </svg>
+              <span>Click to upload or drag and drop</span>
+              <span className="text-xs text-gray-400 mt-1">
+                PNG, JPG, GIF up to 10MB
+              </span>
+            </div>
             <ImagePreview images={formData.images} onRemove={removeImage} />
           </div>
 
