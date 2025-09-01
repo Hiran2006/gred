@@ -1,7 +1,7 @@
 "use client";
 
-import { ChangeEvent, useRef } from 'react';
-import Image from 'next/image';
+import { ChangeEvent, useRef } from "react";
+import Image from "next/image";
 
 type ImageUploaderProps = {
   onImageChange: (files: FileList) => void;
@@ -9,10 +9,10 @@ type ImageUploaderProps = {
   images: string[];
 };
 
-export const ImageUploader = ({ 
-  onImageChange, 
-  onRemoveImage, 
-  images 
+export const ImageUploader = ({
+  onImageChange,
+  onRemoveImage,
+  images,
 }: ImageUploaderProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -20,7 +20,7 @@ export const ImageUploader = ({
     if (e.target.files && e.target.files.length > 0) {
       onImageChange(e.target.files);
       if (e.target) {
-        e.target.value = '';
+        e.target.value = "";
       }
     }
   };
@@ -76,13 +76,13 @@ export const ImageUploader = ({
           PNG, JPG, GIF up to 10MB
         </span>
       </div>
-      
+
       {images.length > 0 && (
         <div className="mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           {images.map((image, index) => (
             <div key={index} className="relative group">
               <div className="aspect-square overflow-hidden rounded-lg">
-                <img
+                <Image
                   src={image}
                   alt={`Preview ${index + 1}`}
                   className="w-full h-full object-cover"

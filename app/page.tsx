@@ -75,10 +75,10 @@ export default function Home() {
 
           <p className="text-lg sm:text-xl text-gray-700 mb-8 max-w-2xl leading-relaxed">
             GRED is a dynamic online platform where anyone can buy, sell, or
-            rent products with ease. Whether you're an individual with unused
-            items or a creator looking to launch a store without any technical
-            background, GRED gives you the freedom to build your own market,
-            your own way.
+            rent products with ease. Whether you&apos;re an individual with
+            unused items or a creator looking to launch a store without any
+            technical background, GRED gives you the freedom to build your own
+            market, your own way.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6">

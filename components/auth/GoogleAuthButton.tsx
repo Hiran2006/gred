@@ -2,7 +2,6 @@
 
 import { FcGoogle } from "react-icons/fc";
 import { Provider } from "@supabase/supabase-js";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import supabase from "@/lib/supabase";
 
@@ -18,12 +17,11 @@ export default function GoogleAuthButton({
   onError,
 }: GoogleAuthButtonProps) {
   const [isButtonLoading, setButtonLoading] = useState(false);
-  const router = useRouter();
 
   const handleOAuth = async (provider: Provider) => {
     setButtonLoading(true);
     try {
-      const { data, error } = await supabase.auth.signInWithOAuth({
+      const { error } = await supabase.auth.signInWithOAuth({
         provider,
         options: {
           redirectTo: `${window.location.origin}/home`,
