@@ -10,7 +10,7 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col items-center min-h-screen pb-20 overflow-scroll">
+    <div className="flex flex-col items-center min-h-screen pb-20">
       <Header />
       <PropertyList onRequestProperty={handleRequestProperty} />
       <BottomNavbar />
