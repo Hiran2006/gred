@@ -4,20 +4,24 @@ import PropertyCard from "./PropertyCard";
 import { supabase } from "@/lib/supabase";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-type Post = {
-  post_id: number;
+type PropertyPost = {
+  id: string;
   title: string;
-  content: string;
-  post_type: "rent" | "sell";
-  post_date: string;
-  location: string;
-  picture_url: string;
-  user_id: string;
+  description: string | null;
+  category: string | null;
+  rent_amount?: number;
+  deposit_amount?: number;
+  price?: number;
+  image_url: string | null;
+  location: string | null;
+  contact_number: string | null;
+  created_at: string;
+  post_type?: "rent" | "sell";
 };
 
 type PropertyListProps = {
   className?: string;
-  type: 'buy' | 'rent';
+  type: "buy" | "rent";
   onRequestProperty?: (id: number) => void;
 };
 
@@ -26,12 +30,12 @@ export default function PropertyList({
   type,
   onRequestProperty,
 }: PropertyListProps) {
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [posts, setPosts] = useState<PropertyPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
-  const postsPerPage = 5;
+  const postsPerPage = 12;
 
   // Reset to first page when type changes
   useEffect(() => {
@@ -41,20 +45,35 @@ export default function PropertyList({
   const loadPosts = useCallback(async () => {
     try {
       setLoading(true);
-      const postType = type === 'buy' ? 'sell' : 'rent';
+
+      const tableName = type === "rent" ? "rent_posts" : "sell_posts";
+      const selectQuery =
+        type === "rent"
+          ? "id, title, description, category, rent_amount, deposit_amount, image_url, location, contact_number, created_at"
+          : "id, title, description, category, price, image_url, location, contact_number, created_at";
 
       const { data, error, count } = await supabase
-        .from('posts')
-        .select('*', { count: 'exact' })
-        .eq('post_type', postType)
-        .order('post_date', { ascending: false })
-        .range(currentPage * postsPerPage, (currentPage + 1) * postsPerPage - 1);
+        .from(tableName)
+        .select(selectQuery, { count: "exact" })
+        .eq("is_active", true)
+        .order("created_at", { ascending: false })
+        .range(
+          currentPage * postsPerPage,
+          (currentPage + 1) * postsPerPage - 1
+        );
 
       if (error) throw error;
 
-      setPosts(data || []);
+      // Add post_type to each post for rendering
+      const postsWithType = (data || []).map((post) => ({
+        ...post,
+        post_type: type,
+      }));
+
+      setPosts(postsWithType);
+      setTotalPages(Math.ceil((count || 0) / postsPerPage));
     } catch (error) {
-      console.error('Error fetching posts:', error);
+      console.error("Error fetching posts:", error);
       setError("Failed to load properties. Please try again later.");
     } finally {
       setLoading(false);
@@ -102,13 +121,15 @@ export default function PropertyList({
       >
         {posts.map((post) => (
           <PropertyCard
-            key={post.post_id}
-            id={post.post_id}
+            key={post.id}
+            id={post.id}
             title={post.title}
-            location={post.location}
-            post_type={post.post_type}
-            imageUrl={post.picture_url + "/img1.jpeg"}
-            onRequest={() => handleRequest(post.post_id)}
+            location={post.location || "Location not specified"}
+            price={type === "rent" ? post.rent_amount : post.price}
+            postType={type}
+            depositAmount={type === "rent" ? post.deposit_amount : undefined}
+            imageUrl={post.image_url || "/placeholder-property.jpg"}
+            onRequest={() => handleRequest(Number(post.id))}
           />
         ))}
       </div>
