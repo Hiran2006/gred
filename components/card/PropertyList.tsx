@@ -74,7 +74,7 @@ export default function PropertyList({
 
       let data: RentPostRow[] | SellPostRow[] | null = null;
       let count: number | null = null;
-      let error: any = null;
+      let error: unknown = null;
 
       if (type === "rent") {
         const res = await supabase
@@ -85,7 +85,10 @@ export default function PropertyList({
           )
           .eq("is_active", true)
           .order("created_at", { ascending: false })
-          .range(currentPage * postsPerPage, (currentPage + 1) * postsPerPage - 1);
+          .range(
+            currentPage * postsPerPage,
+            (currentPage + 1) * postsPerPage - 1
+          );
         data = res.data;
         count = res.count;
         error = res.error;
@@ -98,7 +101,10 @@ export default function PropertyList({
           )
           .eq("is_active", true)
           .order("created_at", { ascending: false })
-          .range(currentPage * postsPerPage, (currentPage + 1) * postsPerPage - 1);
+          .range(
+            currentPage * postsPerPage,
+            (currentPage + 1) * postsPerPage - 1
+          );
         data = res.data;
         count = res.count;
         error = res.error;

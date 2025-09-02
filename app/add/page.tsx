@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from 'react-hot-toast';
+import { toast } from "react-hot-toast";
 import BottomNavbar from "@/components/nav bar/BottomNavigation";
 import { FormField, PropertyTypeToggle, ImageUploader } from "./components";
 
@@ -36,104 +36,115 @@ export default function AddProperty() {
     tags: [] as string[],
     images: [] as string[],
     is_active: true,
-    
+
     // Rent specific
     rent_amount: "",
     deposit_amount: "",
-    
+
     // Sell specific
     price: "",
   });
-  
+
   const [tagInput, setTagInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
-  
+
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
-    
+
     // Common validations
-    if (!formData.title.trim()) newErrors.title = 'Title is required';
-    if (!formData.category.trim()) newErrors.category = 'Category is required';
-    if (!formData.location.trim()) newErrors.location = 'Location is required';
-    
+    if (!formData.title.trim()) newErrors.title = "Title is required";
+    if (!formData.category.trim()) newErrors.category = "Category is required";
+    if (!formData.location.trim()) newErrors.location = "Location is required";
+
     // Type-specific validations
-    if (formData.listingType === 'rent') {
+    if (formData.listingType === "rent") {
       if (!formData.rent_amount) {
-        newErrors.rent_amount = 'Rent amount is required';
-      } else if (isNaN(Number(formData.rent_amount)) || Number(formData.rent_amount) <= 0) {
-        newErrors.rent_amount = 'Please enter a valid rent amount';
+        newErrors.rent_amount = "Rent amount is required";
+      } else if (
+        isNaN(Number(formData.rent_amount)) ||
+        Number(formData.rent_amount) <= 0
+      ) {
+        newErrors.rent_amount = "Please enter a valid rent amount";
       }
-      
+
       if (formData.deposit_amount && isNaN(Number(formData.deposit_amount))) {
-        newErrors.deposit_amount = 'Please enter a valid deposit amount';
+        newErrors.deposit_amount = "Please enter a valid deposit amount";
       }
     } else {
       if (!formData.price) {
-        newErrors.price = 'Price is required';
+        newErrors.price = "Price is required";
       } else if (isNaN(Number(formData.price)) || Number(formData.price) <= 0) {
-        newErrors.price = 'Please enter a valid price';
+        newErrors.price = "Please enter a valid price";
       }
     }
-    
+
     if (!formData.contact_number) {
-      newErrors.contact_number = 'Contact number is required';
+      newErrors.contact_number = "Contact number is required";
     } else if (!PHONE_REGEX.test(formData.contact_number)) {
-      newErrors.contact_number = 'Please enter a valid 10-digit phone number';
+      newErrors.contact_number = "Please enter a valid 10-digit phone number";
     }
-    
-    if (!formData.description || formData.description.length < MIN_DESCRIPTION_LENGTH) {
+
+    if (
+      !formData.description ||
+      formData.description.length < MIN_DESCRIPTION_LENGTH
+    ) {
       newErrors.description = `Description must be at least ${MIN_DESCRIPTION_LENGTH} characters long`;
     }
-    
-    if (formData.listingType === 'rent') {
+
+    if (formData.listingType === "rent") {
       if (!formData.rent_amount) {
-        newErrors.rent_amount = 'Rent amount is required';
+        newErrors.rent_amount = "Rent amount is required";
       } else if (parseFloat(formData.rent_amount) <= 0) {
-        newErrors.rent_amount = 'Rent amount must be greater than 0';
+        newErrors.rent_amount = "Rent amount must be greater than 0";
       }
     } else {
       if (!formData.price) {
-        newErrors.price = 'Price is required';
+        newErrors.price = "Price is required";
       } else if (parseFloat(formData.price) <= 0) {
-        newErrors.price = 'Price must be greater than 0';
+        newErrors.price = "Price must be greater than 0";
       }
     }
-    
+
     if (formData.images.length === 0) {
-      newErrors.images = 'Please upload at least one image';
+      newErrors.images = "Please upload at least one image";
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  
-  const handleAddTag = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter' && tagInput.trim()) {
-      e.preventDefault();
-      const newTag = tagInput.trim();
-      if (!formData.tags.includes(newTag)) {
-        setFormData(prev => ({
-          ...prev,
-          tags: [...prev.tags, newTag]
-        }));
+
+  const handleAddTag = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === "Enter" && tagInput.trim()) {
+        e.preventDefault();
+        const newTag = tagInput.trim();
+        if (!formData.tags.includes(newTag)) {
+          setFormData((prev) => ({
+            ...prev,
+            tags: [...prev.tags, newTag],
+          }));
+        }
+        setTagInput("");
       }
-      setTagInput("");
-    }
-  }, [tagInput, formData.tags]);
-  
+    },
+    [tagInput, formData.tags]
+  );
+
   const removeTag = useCallback((tagToRemove: string) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      tags: prev.tags.filter(tag => tag !== tagToRemove)
+      tags: prev.tags.filter((tag) => tag !== tagToRemove),
     }));
   }, []);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -156,14 +167,14 @@ export default function AddProperty() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
-    
+
     try {
       setIsSubmitting(true);
-      
+
       const baseData = {
         title: formData.title,
         description: formData.description,
@@ -174,37 +185,45 @@ export default function AddProperty() {
         images: formData.images,
         is_active: formData.is_active,
       };
-      
-      const endpoint = formData.listingType === 'rent' ? '/api/rent-posts' : '/api/sell-posts';
-      const postData = formData.listingType === 'rent'
-        ? {
-            ...baseData,
-            rent_amount: parseFloat(formData.rent_amount),
-            deposit_amount: formData.deposit_amount ? parseFloat(formData.deposit_amount) : 0,
-          }
-        : {
-            ...baseData,
-            price: parseFloat(formData.price),
-          };
-      
+
+      const endpoint =
+        formData.listingType === "rent" ? "/api/rent-posts" : "/api/sell-posts";
+      const postData =
+        formData.listingType === "rent"
+          ? {
+              ...baseData,
+              rent_amount: parseFloat(formData.rent_amount),
+              deposit_amount: formData.deposit_amount
+                ? parseFloat(formData.deposit_amount)
+                : 0,
+            }
+          : {
+              ...baseData,
+              price: parseFloat(formData.price),
+            };
+
       const response = await fetch(endpoint, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(postData),
       });
-      
+
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.error || 'Failed to submit property');
+        throw new Error(errorData.error || "Failed to submit property");
       }
-      
-      toast.success('Property listed successfully!');
-      router.push('/home');
+
+      toast.success("Property listed successfully!");
+      router.push("/home");
     } catch (error) {
-      console.error('Error submitting property:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to list property. Please try again.');
+      console.error("Error submitting property:", error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Failed to list property. Please try again."
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -214,9 +233,9 @@ export default function AddProperty() {
     setFormData((prev) => ({
       ...prev,
       listingType: type,
-      rent_amount: type === 'sell' ? '' : prev.rent_amount,
-      price: type === 'rent' ? '' : prev.price,
-      deposit_amount: type === 'sell' ? '' : prev.deposit_amount,
+      rent_amount: type === "sell" ? "" : prev.rent_amount,
+      price: type === "rent" ? "" : prev.price,
+      deposit_amount: type === "sell" ? "" : prev.deposit_amount,
     }));
   };
 
@@ -230,15 +249,9 @@ export default function AddProperty() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <PropertyTypeToggle
             listingType={formData.listingType}
-            onTypeChange={(type) => setFormData(prev => ({
-              ...prev,
-              listingType: type,
-              rent_amount: type === 'sell' ? '' : prev.rent_amount,
-              price: type === 'rent' ? '' : prev.price,
-              deposit_amount: type === 'sell' ? '' : prev.deposit_amount,
-            }))}
+            onTypeChange={handleTypeChange}
           />
-          
+
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
             <FormField
               label="Title"
@@ -248,8 +261,10 @@ export default function AddProperty() {
               onChange={handleChange}
               required
             />
-            {errors.title && <p className="mt-1 text-sm text-red-600">{errors.title}</p>}
-            
+            {errors.title && (
+              <p className="mt-1 text-sm text-red-600">{errors.title}</p>
+            )}
+
             <FormField
               label="Category"
               name="category"
@@ -258,9 +273,11 @@ export default function AddProperty() {
               onChange={handleChange}
               required
             />
-            {errors.category && <p className="mt-1 text-sm text-red-600">{errors.category}</p>}
-            
-            {formData.listingType === 'rent' ? (
+            {errors.category && (
+              <p className="mt-1 text-sm text-red-600">{errors.category}</p>
+            )}
+
+            {formData.listingType === "rent" ? (
               <>
                 <div>
                   <FormField
@@ -273,9 +290,13 @@ export default function AddProperty() {
                     step="100"
                     required
                   />
-                  {errors.rent_amount && <p className="mt-1 text-sm text-red-600">{errors.rent_amount}</p>}
+                  {errors.rent_amount && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.rent_amount}
+                    </p>
+                  )}
                 </div>
-                
+
                 <div>
                   <FormField
                     label="Deposit Amount (₹)"
@@ -286,7 +307,11 @@ export default function AddProperty() {
                     min="0"
                     step="1000"
                   />
-                  {errors.deposit_amount && <p className="mt-1 text-sm text-red-600">{errors.deposit_amount}</p>}
+                  {errors.deposit_amount && (
+                    <p className="mt-1 text-sm text-red-600">
+                      {errors.deposit_amount}
+                    </p>
+                  )}
                 </div>
               </>
             ) : (
@@ -301,10 +326,12 @@ export default function AddProperty() {
                   step="1000"
                   required
                 />
-                {errors.price && <p className="mt-1 text-sm text-red-600">{errors.price}</p>}
+                {errors.price && (
+                  <p className="mt-1 text-sm text-red-600">{errors.price}</p>
+                )}
               </div>
             )}
-            
+
             <FormField
               label="Location"
               name="location"
@@ -313,8 +340,10 @@ export default function AddProperty() {
               onChange={handleChange}
               required
             />
-            {errors.location && <p className="mt-1 text-sm text-red-600">{errors.location}</p>}
-            
+            {errors.location && (
+              <p className="mt-1 text-sm text-red-600">{errors.location}</p>
+            )}
+
             <FormField
               label="Contact Number"
               name="contact_number"
@@ -323,8 +352,12 @@ export default function AddProperty() {
               onChange={handleChange}
               required
             />
-            {errors.contact_number && <p className="mt-1 text-sm text-red-600">{errors.contact_number}</p>}
-            
+            {errors.contact_number && (
+              <p className="mt-1 text-sm text-red-600">
+                {errors.contact_number}
+              </p>
+            )}
+
             <div className="col-span-2">
               <FormField
                 label={`Description (${formData.description.length}/${MIN_DESCRIPTION_LENGTH}+ characters)`}
@@ -334,9 +367,13 @@ export default function AddProperty() {
                 onChange={handleChange}
                 required
               />
-              {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
+              {errors.description && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.description}
+                </p>
+              )}
             </div>
-            
+
             <div className="col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Tags (press Enter to add)
@@ -383,19 +420,39 @@ export default function AddProperty() {
             >
               {isSubmitting ? (
                 <>
-                  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <svg
+                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
                   </svg>
                   Submitting...
                 </>
               ) : formData.images.length === 0 ? (
-                'Add at least one image'
+                "Add at least one image"
               ) : (
-                'Add Property'
+                "Add Property"
               )}
             </button>
-            {errors.images && <p className="mt-2 text-sm text-red-600 text-center">{errors.images}</p>}
+            {errors.images && (
+              <p className="mt-2 text-sm text-red-600 text-center">
+                {errors.images}
+              </p>
+            )}
           </div>
         </form>
       </div>
