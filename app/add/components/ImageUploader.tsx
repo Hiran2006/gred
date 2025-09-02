@@ -85,6 +85,8 @@ export const ImageUploader = ({
                 <Image
                   src={image}
                   alt={`Preview ${index + 1}`}
+                  width={200}
+                  height={200}
                   className="w-full h-full object-cover"
                 />
               </div>

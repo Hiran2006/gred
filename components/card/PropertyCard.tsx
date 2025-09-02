@@ -22,8 +22,8 @@ export default function PropertyCard({
   const [imageError, setImageError] = useState(false);
   return (
     <div key={id} className="bg-white rounded-xl shadow-md overflow-hidden">
-      <div className="relative h-48">
-        {!imageError || (
+      <div className="relative h-48 w-full bg-gray-100">
+        {!imageError ? (
           <Image
             src={imageUrl}
             alt={title}
@@ -31,7 +31,12 @@ export default function PropertyCard({
             className="object-cover"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             onError={() => setImageError(true)}
+            priority={false}
           />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center bg-gray-200">
+            <span className="text-gray-500">No image available</span>
+          </div>
         )}
       </div>
       <div className="p-4">

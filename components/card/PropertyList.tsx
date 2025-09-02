@@ -37,17 +37,28 @@ export default function PropertyList({
       const from = (currentPage - 1) * itemsPerPage;
       const to = from + itemsPerPage - 1;
 
+      console.log('Fetching posts from Supabase...');
+      
       // Get the count of all posts
-      const { count } = await supabase
+      const { count, error: countError } = await supabase
         .from("posts")
         .select("*", { count: "exact", head: true });
 
+      if (countError) {
+        console.error('Error counting posts:', countError);
+        throw countError;
+      }
+
+      console.log('Total posts count:', count);
       setTotalItems(count || 0);
 
       // Get paginated posts
+      console.log(`Fetching posts ${from} to ${to}...`);
       const { data, error } = await supabase
         .from("posts")
         .select("*")
+        .range(from, to)
+        .order('created_at', { ascending: false })
         .order("post_date", { ascending: false })
         .range(from, to);
 
