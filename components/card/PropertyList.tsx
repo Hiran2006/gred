@@ -17,61 +17,49 @@ type Post = {
 
 type PropertyListProps = {
   className?: string;
+  type: 'buy' | 'rent';
   onRequestProperty?: (id: number) => void;
 };
 
 export default function PropertyList({
   className = "",
+  type,
   onRequestProperty,
 }: PropertyListProps) {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(12); // 6 items per page for 2x3 grid
-  const [totalItems, setTotalItems] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const postsPerPage = 5;
+
+  // Reset to first page when type changes
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [type]);
 
   const loadPosts = useCallback(async () => {
     try {
       setLoading(true);
-      const from = (currentPage - 1) * itemsPerPage;
-      const to = from + itemsPerPage - 1;
+      const postType = type === 'buy' ? 'sell' : 'rent';
 
-      console.log('Fetching posts from Supabase...');
-      
-      // Get the count of all posts
-      const { count, error: countError } = await supabase
-        .from("posts")
-        .select("*", { count: "exact", head: true });
-
-      if (countError) {
-        console.error('Error counting posts:', countError);
-        throw countError;
-      }
-
-      console.log('Total posts count:', count);
-      setTotalItems(count || 0);
-
-      // Get paginated posts
-      console.log(`Fetching posts ${from} to ${to}...`);
-      const { data, error } = await supabase
-        .from("posts")
-        .select("*")
-        .range(from, to)
-        .order('created_at', { ascending: false })
-        .order("post_date", { ascending: false })
-        .range(from, to);
+      const { data, error, count } = await supabase
+        .from('posts')
+        .select('*', { count: 'exact' })
+        .eq('post_type', postType)
+        .order('post_date', { ascending: false })
+        .range(currentPage * postsPerPage, (currentPage + 1) * postsPerPage - 1);
 
       if (error) throw error;
 
       setPosts(data || []);
-    } catch (err) {
-      console.error("Failed to load posts:", err);
+    } catch (error) {
+      console.error('Error fetching posts:', error);
       setError("Failed to load properties. Please try again later.");
     } finally {
       setLoading(false);
     }
-  }, [currentPage, itemsPerPage]);
+  }, [currentPage, postsPerPage, type]);
 
   useEffect(() => {
     loadPosts();
@@ -126,11 +114,11 @@ export default function PropertyList({
       </div>
 
       {/* Pagination Controls */}
-      {totalItems > itemsPerPage && (
+      {posts.length > 0 && (
         <div className="flex items-center justify-between mt-8">
           <button
-            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-            disabled={currentPage === 1 || loading}
+            onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
+            disabled={currentPage === 0 || loading}
             className="flex items-center gap-1 px-3 py-1.5 text-sm border rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <ChevronLeft className="h-4 w-4" />
@@ -138,12 +126,12 @@ export default function PropertyList({
           </button>
 
           <span className="text-sm text-gray-600">
-            Page {currentPage} of {Math.ceil(totalItems / itemsPerPage)}
+            Page {currentPage + 1} of {Math.max(1, totalPages)}
           </span>
 
           <button
             onClick={() => setCurrentPage((prev) => prev + 1)}
-            disabled={currentPage * itemsPerPage >= totalItems || loading}
+            disabled={currentPage >= totalPages - 1 || loading}
             className="flex items-center gap-1 px-3 py-1.5 text-sm border rounded-md hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Next
