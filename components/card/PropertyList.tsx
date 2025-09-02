@@ -21,8 +21,34 @@ type PropertyPost = {
 
 type PropertyListProps = {
   className?: string;
-  type: "buy" | "rent";
+  type: "rent" | "sell";
   onRequestProperty?: (id: number) => void;
+};
+
+// Row shapes from Supabase for each table (minimal fields used here)
+type RentPostRow = {
+  id: string;
+  title: string;
+  description: string | null;
+  category: string | null;
+  rent_amount: number | null;
+  deposit_amount: number | null;
+  image_url: string | null;
+  location: string | null;
+  contact_number: string | null;
+  created_at: string;
+};
+
+type SellPostRow = {
+  id: string;
+  title: string;
+  description: string | null;
+  category: string | null;
+  price: number | null;
+  image_url: string | null;
+  location: string | null;
+  contact_number: string | null;
+  created_at: string;
 };
 
 export default function PropertyList({
@@ -46,29 +72,75 @@ export default function PropertyList({
     try {
       setLoading(true);
 
-      const tableName = type === "rent" ? "rent_posts" : "sell_posts";
-      const selectQuery =
-        type === "rent"
-          ? "id, title, description, category, rent_amount, deposit_amount, image_url, location, contact_number, created_at"
-          : "id, title, description, category, price, image_url, location, contact_number, created_at";
+      let data: RentPostRow[] | SellPostRow[] | null = null;
+      let count: number | null = null;
+      let error: any = null;
 
-      const { data, error, count } = await supabase
-        .from(tableName)
-        .select(selectQuery, { count: "exact" })
-        .eq("is_active", true)
-        .order("created_at", { ascending: false })
-        .range(
-          currentPage * postsPerPage,
-          (currentPage + 1) * postsPerPage - 1
-        );
+      if (type === "rent") {
+        const res = await supabase
+          .from("rent_posts")
+          .select(
+            "id, title, description, category, rent_amount, deposit_amount, image_url, location, contact_number, created_at",
+            { count: "exact" }
+          )
+          .eq("is_active", true)
+          .order("created_at", { ascending: false })
+          .range(currentPage * postsPerPage, (currentPage + 1) * postsPerPage - 1);
+        data = res.data;
+        count = res.count;
+        error = res.error;
+      } else {
+        const res = await supabase
+          .from("sell_posts")
+          .select(
+            "id, title, description, category, price, image_url, location, contact_number, created_at",
+            { count: "exact" }
+          )
+          .eq("is_active", true)
+          .order("created_at", { ascending: false })
+          .range(currentPage * postsPerPage, (currentPage + 1) * postsPerPage - 1);
+        data = res.data;
+        count = res.count;
+        error = res.error;
+      }
 
       if (error) throw error;
 
-      // Add post_type to each post for rendering
-      const postsWithType = (data || []).map((post) => ({
-        ...post,
-        post_type: type,
-      }));
+      // Normalize rows into PropertyPost and add post_type
+      let postsWithType: PropertyPost[] = [];
+      if (type === "rent") {
+        const rows = (data ?? []) as RentPostRow[];
+        postsWithType = rows.map((row) => ({
+          id: row.id,
+          title: row.title,
+          description: row.description,
+          category: row.category,
+          rent_amount: row.rent_amount ?? undefined,
+          deposit_amount: row.deposit_amount ?? undefined,
+          price: undefined,
+          image_url: row.image_url,
+          location: row.location,
+          contact_number: row.contact_number,
+          created_at: row.created_at,
+          post_type: "rent",
+        }));
+      } else {
+        const rows = (data ?? []) as SellPostRow[];
+        postsWithType = rows.map((row) => ({
+          id: row.id,
+          title: row.title,
+          description: row.description,
+          category: row.category,
+          rent_amount: undefined,
+          deposit_amount: undefined,
+          price: row.price ?? undefined,
+          image_url: row.image_url,
+          location: row.location,
+          contact_number: row.contact_number,
+          created_at: row.created_at,
+          post_type: "sell",
+        }));
+      }
 
       setPosts(postsWithType);
       setTotalPages(Math.ceil((count || 0) / postsPerPage));

@@ -7,7 +7,7 @@ type PropertyCardProps = {
   title: string;
   location: string;
   price?: number;
-  postType: 'buy' | 'rent';
+  postType: 'rent' | 'sell';
   depositAmount?: number;
   imageUrl: string;
   onRequest?: () => void;

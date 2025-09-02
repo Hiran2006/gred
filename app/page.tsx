@@ -64,7 +64,7 @@ export default function Home() {
                     key={index}
                     className="absolute top-0 left-0 w-full h-full flex items-center justify-start"
                   >
-                    <span className="font-display font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-amber-500">
+                    <span className="font-display font-extrabold text-accent">
                       {action}
                     </span>
                   </div>
