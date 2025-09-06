@@ -14,7 +14,6 @@ body {
     Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   color: var(--text-color);
   background-size: cover;
-  overflow: hidden;
 }
 
 .scrollbar-hide::-webkit-scrollbar {

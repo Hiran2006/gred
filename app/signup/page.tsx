@@ -1,12 +1,11 @@
 "use client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import styles from "../login/login.module.css";
 import Image from "next/image";
 import bgImage from "@/public/background.png";
 import Link from "next/link";
 import supabase from "@/lib/supabase";
-import GoogleAuthButton from "@/components/GoogleAuthButton";
+import GoogleAuthButton from "@/components/auth/GoogleAuthButton";
 
 type SignupError = {
   message: string;
@@ -34,7 +33,7 @@ export default function SignupPage() {
     }
 
     setIsLoading(true);
-    const { data, error: signUpError } = await supabase.auth.signUp({
+    const { error: signUpError } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -55,93 +54,107 @@ export default function SignupPage() {
     }
   };
   return (
-    <div className="flex items-center bg-amber-100">
-      <div className={styles.wrapper}>
-        <h1>Create an account</h1>
-        {error && <p className={styles.errorMessage}>{error.message}</p>}
-        <form className={styles.form} onSubmit={handleSignup}>
+    <div className="flex min-h-screen bg-amber-100">
+      <div className="box-border bg-white h-screen w-full max-w-[600px] p-2.5 rounded-r-[20px] flex flex-col items-center justify-center">
+        <h1 className="text-5xl font-black uppercase text-gray-800 mb-8">
+          Create an account
+        </h1>
+        {error && (
+          <p className="w-full max-w-[400px] text-red-500 text-sm mb-4 text-center">
+            {error.message}
+          </p>
+        )}
+        <form
+          className="w-full max-w-[400px] my-5 mx-0 flex flex-col items-center gap-2.5"
+          onSubmit={handleSignup}
+        >
           <div
-            className={`${styles.formGroup} ${
-              error?.field === "email" ? styles.incorrect : ""
+            className={`w-full flex justify-center ${
+              error?.field === "email" ? "border-red-500" : ""
             }`}
           >
-            <label htmlFor="email-input" className={styles.label}>
-              <span>@</span>
-            </label>
+            <div className="flex-shrink-0 h-[50px] w-[50px] bg-amber-400 text-white rounded-l-[10px] flex justify-center items-center text-2xl font-medium">
+              @
+            </div>
             <input
               type="email"
               name="email"
-              id="email-input"
-              placeholder="Email"
-              className={styles.input}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
+              className="box-border flex-grow min-w-0 h-[50px] px-4 font-inherit rounded-r-[10px] border-2 border-gray-200 border-l-0 bg-gray-200 transition-[150ms] ease-in-out hover:border-amber-400 focus:outline-none focus:border-gray-800"
+              placeholder="Email"
               disabled={isLoading}
               required
             />
           </div>
+
           <div
-            className={`${styles.formGroup} ${
-              error?.field === "password" ? styles.incorrect : ""
+            className={`w-full flex justify-center ${
+              error?.field === "password" ? "border-red-500" : ""
             }`}
           >
-            <label htmlFor="password-input" className={styles.label}>
+            <div className="flex-shrink-0 h-[50px] w-[50px] bg-amber-400 text-white rounded-l-[10px] flex justify-center items-center text-2xl font-medium">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                height="24"
-                viewBox="0 -960 960 960"
-                width="24"
+                height="1em"
+                viewBox="0 0 448 512"
+                className="fill-current"
               >
-                <path d="M240-80q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640h40v-80q0-83 58.5-141.5T480-920q83 0 141.5 58.5T680-720v80h40q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240Zm0-80h480v-400H240v400Zm240.168-120q12.832 0 21.832-9.068 9-9.069 9-21.932t-9.032-21.932q-9.033-9.068-21-9.068T480-343q-9 9-9 21.833 0 12.834 9 22.167 8.667 9 21.833 9Q516-280 528-289t12-22q0-13-9-22t-21.832-9q-12.833 0-21.833 9.05-9 9.05-9 21.95 0 12.9 9 22 9 9.05 21.832 9.05ZM360-640h240v-80q0-50-35-85t-85-35q-50 0-85 35t-35 85v80ZM240-160v-400 400Z" />
+                <path d="M144 144v48H304V144c0-44.2-35.8-80-80-80s-80 35.8-80 80zM80 192V144C80 64.5 144.5 0 224 0s144 64.5 144 144v48h16c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V256c0-35.3 28.7-64 64-64H80z" />
               </svg>
-            </label>
+            </div>
             <input
               type="password"
               name="password"
-              id="password-input"
-              placeholder="Password"
-              className={styles.input}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              className="box-border flex-grow min-w-0 h-[50px] px-4 font-inherit rounded-r-[10px] border-2 border-gray-200 border-l-0 bg-gray-200 transition-[150ms] ease-in-out hover:border-amber-400 focus:outline-none focus:border-gray-800"
+              placeholder="Password"
               disabled={isLoading}
               required
               minLength={6}
             />
           </div>
+
           <div
-            className={`${styles.formGroup} ${
-              error?.field === "confirmPassword" ? styles.incorrect : ""
+            className={`w-full flex justify-center ${
+              error?.field === "confirmPassword" ? "border-red-500" : ""
             }`}
           >
-            <label htmlFor="confirm-password-input" className={styles.label}>
+            <div className="flex-shrink-0 h-[50px] w-[50px] bg-amber-400 text-white rounded-l-[10px] flex justify-center items-center text-2xl font-medium">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                height="24"
-                viewBox="0 -960 960 960"
-                width="24"
+                height="1em"
+                viewBox="0 0 512 512"
+                className="fill-current"
               >
-                <path d="M240-80q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640h40v-80q0-83 58.5-141.5T480-920q83 0 141.5 58.5T680-720v80h40q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240Zm0-80h480v-400H240v400Zm240.168-120q12.832 0 21.832-9.068 9-9.069 9-21.932t-9.032-21.932q-9.033-9.068-21-9.068T480-343q-9 9-9 21.833 0 12.834 9 22.167 8.667 9 21.833 9Q516-280 528-289t12-22q0-13-9-22t-21.832-9q-12.833 0-21.833 9.05-9 9.05-9 21.95 0 12.9 9 22 9 9.05 21.832 9.05ZM360-640h240v-80q0-50-35-85t-85-35q-50 0-85 35t-35 85v80ZM240-160v-400 400Z" />
+                <path d="M336 352c97.2 0 176-78.8 176-176S433.2 0 336 0S160 78.8 160 176c0 18.7 2.9 36.8 8.3 53.7L7 391c-4.5 4.5-7 10.6-7 17v80c0 13.3 10.7 24 24 24h80c13.3 0 24-10.7 24-24V448h40c13.3 0 24-10.7 24-24V384h40c6.4 0 12.5-2.5 17-7l33.3-33.3c16.9 5.4 35 8.3 53.7 8.3zM376 96a40 40 0 1 1 0 80 40 40 0 1 1 0-80z" />
               </svg>
-            </label>
+            </div>
             <input
               type="password"
               name="confirmPassword"
-              id="confirm-password-input"
-              placeholder="Confirm Password"
-              className={styles.input}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              className="box-border flex-grow min-w-0 h-[50px] px-4 font-inherit rounded-r-[10px] border-2 border-gray-200 border-l-0 bg-gray-200 transition-[150ms] ease-in-out hover:border-amber-400 focus:outline-none focus:border-gray-800"
+              placeholder="Confirm Password"
               disabled={isLoading}
               required
               minLength={6}
             />
           </div>
-          <button type="submit" className={styles.button} disabled={isLoading}>
-            {isLoading ? "Creating account..." : "Sign up"}
+
+          <button
+            type="submit"
+            className="w-full max-w-[400px] mt-2.5 border-none rounded-full py-[0.85em] px-16 bg-amber-400 text-white font-inherit font-semibold uppercase cursor-pointer transition-[150ms] ease-in-out hover:bg-gray-800 focus:outline-none disabled:opacity-50"
+            disabled={isLoading}
+          >
+            {isLoading ? "Creating account..." : "Sign Up"}
           </button>
         </form>
-        <div className={styles.divider}>
-          <span>or continue with</span>
+
+        <div className="w-full max-w-[400px] my-5 mx-0 flex items-center before:content-[''] before:flex-1 before:h-px before:bg-gray-300 after:content-[''] after:flex-1 after:h-px after:bg-gray-300">
+          <span className="px-4 text-gray-500">or</span>
         </div>
 
         <GoogleAuthButton
@@ -150,14 +163,17 @@ export default function SignupPage() {
           onError={(error) => setError(error)}
         />
 
-        <p className={styles.signupLink}>
+        <p className="mt-2.5 text-gray-600">
           Already have an account?{" "}
-          <Link href="/login" className={styles.link}>
+          <Link
+            href="/login"
+            className="text-amber-500 font-semibold hover:underline"
+          >
             Log in
           </Link>
         </p>
       </div>
-      <div className="lg:flex justify-center items-center hidden lg:w-1/2">
+      <div className="hidden lg:flex justify-center items-center lg:w-1/2">
         <Image src={bgImage} alt="Background Image" width={400} />
       </div>
     </div>

@@ -1,10 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import logo from "@/public/logo_black.png";
+import anima from "./anima.module.css";
 
 export default function Home() {
-  const actionWords = ["RENT", "SELL", "BUY", "REQUEST"];
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 text-slate-900 relative overflow-hidden">
       {/* Navbar */}
@@ -54,32 +53,32 @@ export default function Home() {
             Welcome to <span className="text-emerald-600">GRED</span>
           </h1>
 
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-semibold mb-6 h-12">
-            You Can{" "}
-            <span className="inline-block min-w-[120px] text-green-600">
-              {actionWords.map((word, index) => (
-                <span
-                  key={index}
-                  className={`absolute animate-typing text-emerald-700 font-semibold`}
-                  style={{
-                    animationDelay: `${index * 2}s`,
-                    animationDuration: "8s",
-                    animationIterationCount: "infinite",
-                    opacity: 0,
-                  }}
-                >
-                  {word}
-                </span>
-              ))}
-            </span>
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-8">
+            <div className="inline-flex items-baseline">
+              <span className="mr-3 font-sans font-medium">You Can</span>
+              <div
+                className={`${anima.dropping_texts} relative inline-block w-40 h-14`}
+              >
+                {["RENT", "SELL", "BUY", "REQUEST"].map((action, index) => (
+                  <div
+                    key={index}
+                    className="absolute top-0 left-0 w-full h-full flex items-center justify-start"
+                  >
+                    <span className="font-display font-extrabold text-accent">
+                      {action}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </h2>
 
           <p className="text-lg sm:text-xl text-gray-700 mb-8 max-w-2xl leading-relaxed">
             GRED is a dynamic online platform where anyone can buy, sell, or
-            rent products with ease. Whether you're an individual with unused
-            items or a creator looking to launch a store without any technical
-            background, GRED gives you the freedom to build your own market,
-            your own way.
+            rent products with ease. Whether you&apos;re an individual with
+            unused items or a creator looking to launch a store without any
+            technical background, GRED gives you the freedom to build your own
+            market, your own way.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-6">
