@@ -132,7 +132,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ data }, { status: 201 });
   } catch (err: unknown) {
     return NextResponse.json(
-      { error: "Unexpected error", details: err?.message ?? String(err) },
+      { error: "Unexpected error", details: String(err) },
       { status: 500 }
     );
   }
