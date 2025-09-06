@@ -56,6 +56,7 @@ export default function AddProperty() {
   const [tagInput, setTagInput] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [files, setFiles] = useState<File[]>([]);
 
   const validateForm = (): boolean => {
     const newErrors: FormErrors = {};
@@ -114,7 +115,7 @@ export default function AddProperty() {
       }
     }
 
-    if (formData.images.length === 0) {
+    if (files.length === 0) {
       newErrors.images = "Please upload at least one image";
     }
 
@@ -157,13 +158,13 @@ export default function AddProperty() {
   };
 
   const handleImageChange = (files: FileList) => {
-    const newImages = Array.from(files).map((file) =>
-      URL.createObjectURL(file)
-    );
+    const selectedFiles = Array.from(files);
+    const newImages = selectedFiles.map((file) => URL.createObjectURL(file));
     setFormData((prev) => ({
       ...prev,
       images: [...prev.images, ...newImages],
     }));
+    setFiles((prev) => [...prev, ...selectedFiles]);
   };
 
   const handleRemoveImage = (index: number) => {
@@ -171,6 +172,7 @@ export default function AddProperty() {
       ...prev,
       images: prev.images.filter((_, i) => i !== index),
     }));
+    setFiles((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -183,39 +185,38 @@ export default function AddProperty() {
     try {
       setIsSubmitting(true);
 
-      const baseData = {
-        title: formData.title,
-        description: formData.description,
-        category: formData.category,
-        location: formData.location,
-        contact_number: formData.contact_number,
-        tags: formData.tags,
-        images: formData.images,
-        is_active: formData.is_active,
-      };
+      // Build multipart form data for server-side upload
+      const fd = new FormData();
+      fd.append("title", formData.title);
+      fd.append("description", formData.description ?? "");
+      fd.append("category", formData.category);
+      fd.append("location", formData.location);
+      fd.append("contact_number", formData.contact_number ?? "");
+      fd.append("is_active", String(formData.is_active ?? true));
 
       const endpoint =
         formData.listingType === "rent" ? "/api/rent-posts" : "/api/sell-posts";
-      const postData =
-        formData.listingType === "rent"
-          ? {
-              ...baseData,
-              rent_amount: parseFloat(formData.rent_amount),
-              deposit_amount: formData.deposit_amount
-                ? parseFloat(formData.deposit_amount)
-                : 0,
-            }
-          : {
-              ...baseData,
-              price: parseFloat(formData.price),
-            };
+      if (formData.listingType === "rent") {
+        fd.append("rent_amount", String(parseFloat(formData.rent_amount)));
+        fd.append(
+          "deposit_amount",
+          String(
+            formData.deposit_amount ? parseFloat(formData.deposit_amount) : 0
+          )
+        );
+      } else {
+        fd.append("price", String(parseFloat(formData.price)));
+      }
+
+      // Append image files (server will take the first one for now)
+      for (const file of files) {
+        fd.append("images", file);
+      }
 
       const response = await fetch(endpoint, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(postData),
+        // Do NOT set Content-Type; the browser sets multipart boundaries
+        body: fd,
       });
 
       if (!response.ok) {
