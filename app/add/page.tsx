@@ -4,7 +4,15 @@ import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import BottomNavbar from "@/components/nav bar/BottomNavigation";
-import { FormField, PropertyTypeToggle, ImageUploader } from "./components";
+import {
+  PropertyTypeToggle,
+  ImageUploader,
+  CommonFields,
+  RentFields,
+  SellFields,
+  TagsInput,
+  SubmitSection,
+} from "./components";
 
 interface FormErrors {
   title?: string;
@@ -253,157 +261,52 @@ export default function AddProperty() {
           />
 
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-            <FormField
-              label="Title"
-              name="title"
-              type="text"
-              value={formData.title}
+            <CommonFields
+              values={{
+                title: formData.title,
+                category: formData.category,
+                location: formData.location,
+                contact_number: formData.contact_number,
+                description: formData.description,
+              }}
+              errors={{
+                title: errors.title,
+                category: errors.category,
+                location: errors.location,
+                contact_number: errors.contact_number,
+                description: errors.description,
+              }}
               onChange={handleChange}
-              required
+              minDescriptionLength={MIN_DESCRIPTION_LENGTH}
             />
-            {errors.title && (
-              <p className="mt-1 text-sm text-red-600">{errors.title}</p>
-            )}
-
-            <FormField
-              label="Category"
-              name="category"
-              type="text"
-              value={formData.category}
-              onChange={handleChange}
-              required
-            />
-            {errors.category && (
-              <p className="mt-1 text-sm text-red-600">{errors.category}</p>
-            )}
 
             {formData.listingType === "rent" ? (
-              <>
-                <div>
-                  <FormField
-                    label="Rent Amount (₹)"
-                    name="rent_amount"
-                    type="number"
-                    value={formData.rent_amount}
-                    onChange={handleChange}
-                    min="0"
-                    step="100"
-                    required
-                  />
-                  {errors.rent_amount && (
-                    <p className="mt-1 text-sm text-red-600">
-                      {errors.rent_amount}
-                    </p>
-                  )}
-                </div>
-
-                <div>
-                  <FormField
-                    label="Deposit Amount (₹)"
-                    name="deposit_amount"
-                    type="number"
-                    value={formData.deposit_amount}
-                    onChange={handleChange}
-                    min="0"
-                    step="1000"
-                  />
-                  {errors.deposit_amount && (
-                    <p className="mt-1 text-sm text-red-600">
-                      {errors.deposit_amount}
-                    </p>
-                  )}
-                </div>
-              </>
-            ) : (
-              <div>
-                <FormField
-                  label="Price (₹)"
-                  name="price"
-                  type="number"
-                  value={formData.price}
-                  onChange={handleChange}
-                  min="0"
-                  step="1000"
-                  required
-                />
-                {errors.price && (
-                  <p className="mt-1 text-sm text-red-600">{errors.price}</p>
-                )}
-              </div>
-            )}
-
-            <FormField
-              label="Location"
-              name="location"
-              type="text"
-              value={formData.location}
-              onChange={handleChange}
-              required
-            />
-            {errors.location && (
-              <p className="mt-1 text-sm text-red-600">{errors.location}</p>
-            )}
-
-            <FormField
-              label="Contact Number"
-              name="contact_number"
-              type="tel"
-              value={formData.contact_number}
-              onChange={handleChange}
-              required
-            />
-            {errors.contact_number && (
-              <p className="mt-1 text-sm text-red-600">
-                {errors.contact_number}
-              </p>
-            )}
-
-            <div className="col-span-2">
-              <FormField
-                label={`Description (${formData.description.length}/${MIN_DESCRIPTION_LENGTH}+ characters)`}
-                name="description"
-                type="textarea"
-                value={formData.description}
+              <RentFields
+                values={{
+                  rent_amount: formData.rent_amount,
+                  deposit_amount: formData.deposit_amount,
+                }}
+                errors={{
+                  rent_amount: errors.rent_amount,
+                  deposit_amount: errors.deposit_amount,
+                }}
                 onChange={handleChange}
-                required
               />
-              {errors.description && (
-                <p className="mt-1 text-sm text-red-600">
-                  {errors.description}
-                </p>
-              )}
-            </div>
+            ) : (
+              <SellFields
+                values={{ price: formData.price }}
+                errors={{ price: errors.price }}
+                onChange={handleChange}
+              />
+            )}
 
-            <div className="col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Tags (press Enter to add)
-              </label>
-              <input
-                type="text"
-                value={tagInput}
-                onChange={(e) => setTagInput(e.target.value)}
-                onKeyDown={handleAddTag}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent"
-                placeholder="e.g. Furnished, Parking, Balcony"
-              />
-              <div className="flex flex-wrap gap-2 mt-2">
-                {formData.tags.map((tag, index) => (
-                  <span
-                    key={index}
-                    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800"
-                  >
-                    {tag}
-                    <button
-                      type="button"
-                      onClick={() => removeTag(tag)}
-                      className="ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full text-amber-400 hover:bg-amber-200 hover:text-amber-500 focus:outline-none"
-                    >
-                      ×
-                    </button>
-                  </span>
-                ))}
-              </div>
-            </div>
+            <TagsInput
+              tags={formData.tags}
+              tagInput={tagInput}
+              onTagInputChange={setTagInput}
+              onAddTagKeyDown={handleAddTag}
+              onRemoveTag={removeTag}
+            />
           </div>
 
           <ImageUploader
@@ -412,48 +315,11 @@ export default function AddProperty() {
             images={formData.images}
           />
 
-          <div className="pt-4 border-t border-gray-200 mt-6">
-            <button
-              type="submit"
-              className="w-full bg-amber-500 text-white py-3 px-6 rounded-lg hover:bg-amber-600 transition-colors focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 disabled:opacity-50 text-sm sm:text-base font-medium flex items-center justify-center"
-              disabled={isSubmitting || formData.images.length === 0}
-            >
-              {isSubmitting ? (
-                <>
-                  <svg
-                    className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Submitting...
-                </>
-              ) : formData.images.length === 0 ? (
-                "Add at least one image"
-              ) : (
-                "Add Property"
-              )}
-            </button>
-            {errors.images && (
-              <p className="mt-2 text-sm text-red-600 text-center">
-                {errors.images}
-              </p>
-            )}
-          </div>
+          <SubmitSection
+            isSubmitting={isSubmitting}
+            canSubmit={formData.images.length > 0}
+            imagesError={errors.images}
+          />
         </form>
       </div>
       <BottomNavbar />
