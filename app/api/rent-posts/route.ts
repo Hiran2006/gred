@@ -41,10 +41,14 @@ export async function POST(req: Request) {
 
       // Get files (first image)
       const files = form.getAll("images");
-      const firstFile = files.find((f) => typeof f !== "string") as File | undefined;
+      const firstFile = files.find((f) => typeof f !== "string") as
+        | File
+        | undefined;
       if (firstFile) {
         const ext = firstFile.name.split(".").pop() || "jpg";
-        const filePath = `rent/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+        const filePath = `rent/${Date.now()}-${Math.random()
+          .toString(36)
+          .slice(2)}.${ext}`;
         const { error: uploadError } = await supabase.storage
           .from(BUCKET)
           .upload(filePath, firstFile, {
@@ -52,9 +56,14 @@ export async function POST(req: Request) {
             upsert: false,
           });
         if (uploadError) {
-          return NextResponse.json({ error: `Image upload failed: ${uploadError.message}` }, { status: 500 });
+          return NextResponse.json(
+            { error: `Image upload failed: ${uploadError.message}` },
+            { status: 500 }
+          );
         }
-        const { data: publicData } = supabase.storage.from(BUCKET).getPublicUrl(filePath);
+        const { data: publicData } = supabase.storage
+          .from(BUCKET)
+          .getPublicUrl(filePath);
         image_url = publicData.publicUrl;
       }
     } else {
@@ -64,7 +73,9 @@ export async function POST(req: Request) {
       description = body.description?.toString() ?? null;
       category = (body.category ?? "").toString().trim();
       location = (body.location ?? "").toString().trim();
-      contact_number = body.contact_number ? body.contact_number.toString() : null;
+      contact_number = body.contact_number
+        ? body.contact_number.toString()
+        : null;
       is_active = typeof body.is_active === "boolean" ? body.is_active : true;
       rent_amount_raw = body.rent_amount;
       deposit_amount_raw = body.deposit_amount ?? 0;
@@ -89,7 +100,10 @@ export async function POST(req: Request) {
     }
 
     if (Object.keys(errors).length > 0) {
-      return NextResponse.json({ error: "Validation failed", details: errors }, { status: 400 });
+      return NextResponse.json(
+        { error: "Validation failed", details: errors },
+        { status: 400 }
+      );
     }
 
     // Insert payload shaped to your DB columns
@@ -116,7 +130,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ data }, { status: 201 });
-  } catch (err: any) {
+  } catch (err: unknown) {
     return NextResponse.json(
       { error: "Unexpected error", details: err?.message ?? String(err) },
       { status: 500 }

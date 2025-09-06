@@ -3,7 +3,7 @@
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
-import BottomNavbar from "@/components/nav bar/BottomNavigation";
+import BottomNavbar from "@/app/home/components/BottomNavigation";
 import {
   PropertyTypeToggle,
   ImageUploader,

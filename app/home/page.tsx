@@ -1,8 +1,8 @@
 "use client";
 import { useState } from "react";
-import Header from "@/components/nav bar/Header";
-import BottomNavbar from "@/components/nav bar/BottomNavigation";
-import PropertyList from "@/components/card/PropertyList";
+import Header from "@/app/home/components/Header";
+import BottomNavbar from "@/app/home/components/BottomNavigation";
+import PropertyList from "@/app/home/components/PropertyList";
 
 type TabType = "buy" | "rent";
 
