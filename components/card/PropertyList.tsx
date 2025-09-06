@@ -207,6 +207,7 @@ export default function PropertyList({
             postType={type}
             depositAmount={type === "rent" ? post.deposit_amount : undefined}
             imageUrl={post.image_url || "/placeholder-property.jpg"}
+            createdAt={post.created_at}
             onRequest={() => handleRequest(Number(post.id))}
           />
         ))}

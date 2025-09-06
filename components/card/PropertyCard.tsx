@@ -10,6 +10,7 @@ type PropertyCardProps = {
   postType: 'rent' | 'sell';
   depositAmount?: number;
   imageUrl: string;
+  createdAt?: string;
   onRequest?: () => void;
 };
 
@@ -21,9 +22,17 @@ export default function PropertyCard({
   postType,
   depositAmount,
   imageUrl,
+  createdAt,
   onRequest,
 }: PropertyCardProps) {
   const [imageError, setImageError] = useState(!imageUrl);
+  const formattedDate = createdAt
+    ? new Date(createdAt).toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      })
+    : null;
   return (
     <div key={id} className="bg-white rounded-xl shadow-md overflow-hidden">
       <div className="relative h-48 w-full bg-gray-100">
@@ -48,6 +57,9 @@ export default function PropertyCard({
           {title}
         </h3>
         <p className="text-gray-600 text-sm">{location}</p>
+        {formattedDate && (
+          <p className="text-gray-500 text-xs mt-1">Posted on {formattedDate}</p>
+        )}
         <div className="mt-3 flex justify-between items-center">
           <div>
             <div>
@@ -78,3 +90,4 @@ export default function PropertyCard({
     </div>
   );
 }
+
