@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
 import PropertyCard from "./PropertyCard";
-import supabase from "@/lib/supabase";
+import supabase from "@/lib/supabase/client";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 type PropertyPost = {

@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
+import supabase from "@/lib/supabase/client";
 import BottomNavbar from "@/app/home/components/BottomNavigation";
 import {
   PropertyTypeToggle,
@@ -71,20 +72,20 @@ export default function AddProperty() {
       if (!formData.rent_amount) {
         newErrors.rent_amount = "Rent amount is required";
       } else if (
-        isNaN(Number(formData.rent_amount)) ||
+        !/^\d+$/.test(formData.rent_amount) ||
         Number(formData.rent_amount) <= 0
       ) {
-        newErrors.rent_amount = "Please enter a valid rent amount";
+        newErrors.rent_amount = "Rent must be a positive whole number";
       }
 
-      if (formData.deposit_amount && isNaN(Number(formData.deposit_amount))) {
-        newErrors.deposit_amount = "Please enter a valid deposit amount";
+      if (formData.deposit_amount && !/^\d+$/.test(formData.deposit_amount)) {
+        newErrors.deposit_amount = "Deposit must be a whole number";
       }
     } else {
       if (!formData.price) {
         newErrors.price = "Price is required";
-      } else if (isNaN(Number(formData.price)) || Number(formData.price) <= 0) {
-        newErrors.price = "Please enter a valid price";
+      } else if (!/^\d+$/.test(formData.price) || Number(formData.price) <= 0) {
+        newErrors.price = "Price must be a positive whole number";
       }
     }
 
@@ -99,20 +100,6 @@ export default function AddProperty() {
       formData.description.length < MIN_DESCRIPTION_LENGTH
     ) {
       newErrors.description = `Description must be at least ${MIN_DESCRIPTION_LENGTH} characters long`;
-    }
-
-    if (formData.listingType === "rent") {
-      if (!formData.rent_amount) {
-        newErrors.rent_amount = "Rent amount is required";
-      } else if (parseFloat(formData.rent_amount) <= 0) {
-        newErrors.rent_amount = "Rent amount must be greater than 0";
-      }
-    } else {
-      if (!formData.price) {
-        newErrors.price = "Price is required";
-      } else if (parseFloat(formData.price) <= 0) {
-        newErrors.price = "Price must be greater than 0";
-      }
     }
 
     if (files.length === 0) {
@@ -185,6 +172,15 @@ export default function AddProperty() {
     try {
       setIsSubmitting(true);
 
+      // Get the current session
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) {
+        throw new Error("You must be logged in to list a property");
+      }
+
       // Build multipart form data for server-side upload
       const fd = new FormData();
       fd.append("title", formData.title);
@@ -193,6 +189,13 @@ export default function AddProperty() {
       fd.append("location", formData.location);
       fd.append("contact_number", formData.contact_number ?? "");
       fd.append("is_active", String(formData.is_active ?? true));
+      fd.append("token", session.access_token);
+      fd.append("tags", JSON.stringify(formData.tags));
+      // if (formData.tags && formData.tags.length > 0) {
+      //   fd.append("tags", formData.tags.join(","));
+      // } else {
+      //   fd.append("tags", "");
+      // }
 
       const endpoint =
         formData.listingType === "rent" ? "/api/rent-posts" : "/api/sell-posts";
@@ -208,13 +211,16 @@ export default function AddProperty() {
         fd.append("price", String(parseFloat(formData.price)));
       }
 
-      // Append image files (server will take the first one for now)
+      // Append image files
       for (const file of files) {
         fd.append("images", file);
       }
 
       const response = await fetch(endpoint, {
         method: "POST",
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
         // Do NOT set Content-Type; the browser sets multipart boundaries
         body: fd,
       });
@@ -225,7 +231,7 @@ export default function AddProperty() {
       }
 
       toast.success("Property listed successfully!");
-      router.push("/home");
+      // router.push("/home");  // Temporarily disabled redirect
     } catch (error) {
       console.error("Error submitting property:", error);
       toast.error(

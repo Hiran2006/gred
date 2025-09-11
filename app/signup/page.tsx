@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import bgImage from "@/public/background.png";
 import Link from "next/link";
-import supabase from "@/lib/supabase";
+import supabase from "@/lib/supabase/client";
 import GoogleAuthButton from "@/components/auth/GoogleAuthButton";
 
 type SignupError = {

@@ -3,7 +3,7 @@
 import { FcGoogle } from "react-icons/fc";
 import { Provider } from "@supabase/supabase-js";
 import { useState } from "react";
-import supabase from "@/lib/supabase";
+import supabase from "@/lib/supabase/client";
 
 type GoogleAuthButtonProps = {
   isLoading?: boolean;
