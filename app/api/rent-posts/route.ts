@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import supabase from "@/lib/supabase/server";
 
-// Initialize Supabase client
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+// Generate a unique filename using timestamp and random number
+const generateUniqueName = (originalName: string) => {
+  const timestamp = Date.now();
+  const random = Math.floor(Math.random() * 10000);
+  const ext = originalName.split('.').pop();
+  return `${timestamp}-${random}.${ext}`;
+};
 
 export async function POST(request: Request) {
   try {
@@ -40,12 +42,11 @@ export async function POST(request: Request) {
     const description = formData.get("description") as string;
     const category = formData.get("category") as string;
     const rentAmount = parseFloat(formData.get("rent_amount") as string);
-    const depositAmount =
-      parseFloat(formData.get("deposit_amount") as string) || 0;
+    const depositAmount = parseFloat(formData.get("deposit_amount") as string) || 0;
     const location = formData.get("location") as string;
     const contactNumber = formData.get("contact_number") as string;
-    const imageUrl = formData.get("image_url") as string | null;
     const tags = JSON.parse(formData.get("tags") as string);
+    const images = formData.getAll("images") as File[];
 
     // Validate required fields
     if (!title || isNaN(rentAmount)) {
@@ -55,39 +56,65 @@ export async function POST(request: Request) {
       );
     }
 
-    // Insert into rent_posts table
-    const { data, error } = await supabase
-      .from("rent_posts")
-      .insert([
-        {
-          user_id: user.id,
-          title,
-          description,
-          category,
-          rent_amount: rentAmount,
-          deposit_amount: depositAmount,
-          location,
-          contact_number: contactNumber,
-          image_url: imageUrl,
-          tags,
-          is_active: true,
-          views_count: 0,
-        },
-      ])
-      .select();
+    // First, create the rent post to get the ID for the upload path
+    const { data: postData, error: postError } = await supabase
+      .from('rent_posts')
+      .insert([{
+        user_id: user.id,
+        title,
+        description,
+        category,
+        rent_amount: rentAmount,
+        deposit_amount: depositAmount,
+        location,
+        contact_number: contactNumber,
+        tags,
+        is_active: true,
+        views_count: 0,
+      }])
+      .select()
+      .single();
 
-    if (error) {
-      console.error("Error creating rent post:", error);
+    if (postError || !postData) {
+      console.error('Error creating rent post:', postError);
       return NextResponse.json(
-        { error: "Failed to create rent post", details: error.message },
+        { error: 'Failed to create rent post', details: postError?.message },
         { status: 500 }
       );
     }
 
+    // Handle image uploads if any
+    if (images && images.length > 0) {
+      const folderPath = `${user.id}/rent_post/${postData.id}`;
+      
+      // Upload all images
+      await Promise.all(images.map(async (file) => {
+        const fileName = generateUniqueName(file.name);
+        const filePath = `${folderPath}/${fileName}`;
+        
+        await supabase.storage
+          .from('products')
+          .upload(filePath, file);
+      }));
+      
+      // Store just the folder path in the database
+      await supabase
+        .from('rent_posts')
+        .update({ image_url: folderPath })
+        .eq('id', postData.id);
+    }
+
+    // Get the updated post with the image URL
+    const { data: updatedPost } = await supabase
+      .from('rent_posts')
+      .select('*')
+      .eq('id', postData.id)
+      .single();
+
     return NextResponse.json(
       {
         message: "Rent post created successfully",
-        data: data[0],
+        data: updatedPost || postData,
       },
       { status: 201 }
     );
