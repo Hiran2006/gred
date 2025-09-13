@@ -12,7 +12,7 @@ type PropertyPost = {
   rent_amount?: number;
   deposit_amount?: number;
   price?: number;
-  image_url: string | null;
+  image_urls: string[] | null;
   location: string | null;
   contact_number: string | null;
   created_at: string;
@@ -33,7 +33,7 @@ type RentPostRow = {
   category: string | null;
   rent_amount: number | null;
   deposit_amount: number | null;
-  image_url: string | null;
+  image_urls: string[] | null;
   location: string | null;
   contact_number: string | null;
   created_at: string;
@@ -45,7 +45,7 @@ type SellPostRow = {
   description: string | null;
   category: string | null;
   price: number | null;
-  image_url: string | null;
+  image_urls: string[] | null;
   location: string | null;
   contact_number: string | null;
   created_at: string;
@@ -80,7 +80,7 @@ export default function PropertyList({
         const res = await supabase
           .from("rent_posts")
           .select(
-            "id, title, description, category, rent_amount, deposit_amount, image_url, location, contact_number, created_at",
+            "id, title, description, category, rent_amount, deposit_amount, image_urls, location, contact_number, created_at",
             { count: "exact" }
           )
           .eq("is_active", true)
@@ -96,7 +96,7 @@ export default function PropertyList({
         const res = await supabase
           .from("sell_posts")
           .select(
-            "id, title, description, category, price, image_url, location, contact_number, created_at",
+            "id, title, description, category, price, image_urls, location, contact_number, created_at",
             { count: "exact" }
           )
           .eq("is_active", true)
@@ -110,7 +110,12 @@ export default function PropertyList({
         error = res.error;
       }
 
-      if (error) throw error;
+      if (error) {
+        console.error("Database query error:", error);
+        throw error;
+      }
+
+      console.log("Fetched data:", data);
 
       // Normalize rows into PropertyPost and add post_type
       let postsWithType: PropertyPost[] = [];
@@ -124,7 +129,7 @@ export default function PropertyList({
           rent_amount: row.rent_amount ?? undefined,
           deposit_amount: row.deposit_amount ?? undefined,
           price: undefined,
-          image_url: row.image_url,
+          image_urls: row.image_urls,
           location: row.location,
           contact_number: row.contact_number,
           created_at: row.created_at,
@@ -140,7 +145,7 @@ export default function PropertyList({
           rent_amount: undefined,
           deposit_amount: undefined,
           price: row.price ?? undefined,
-          image_url: row.image_url,
+          image_urls: row.image_urls,
           location: row.location,
           contact_number: row.contact_number,
           created_at: row.created_at,
@@ -151,8 +156,16 @@ export default function PropertyList({
       setPosts(postsWithType);
       setTotalPages(Math.ceil((count || 0) / postsPerPage));
     } catch (error) {
-      console.error("Error fetching posts:", error);
-      setError("Failed to load properties. Please try again later.");
+      console.error("Error in loadPosts:", {
+        error,
+        message: error instanceof Error ? error.message : "Unknown error",
+        stack: error instanceof Error ? error.stack : undefined,
+      });
+      setError(
+        `Failed to load properties. ${
+          error instanceof Error ? error.message : "Please try again later."
+        }`
+      );
     } finally {
       setLoading(false);
     }
@@ -206,7 +219,7 @@ export default function PropertyList({
             price={type === "rent" ? post.rent_amount : post.price}
             postType={type}
             depositAmount={type === "rent" ? post.deposit_amount : undefined}
-            imageUrl={post.image_url || "/placeholder-property.jpg"}
+            imageUrl={post.image_urls?.[0] || "/placeholder-property.jpg"}
             createdAt={post.created_at}
             onRequest={() => handleRequest(Number(post.id))}
           />

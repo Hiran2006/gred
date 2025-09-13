@@ -1,6 +1,6 @@
 "use client";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 type PropertyCardProps = {
   id: string;
@@ -25,7 +25,27 @@ export default function PropertyCard({
   createdAt,
   onRequest,
 }: PropertyCardProps) {
-  const [imageError, setImageError] = useState(!imageUrl);
+  const [imageError, setImageError] = useState(true);
+  const [imageSrc, setImageSrc] = useState<string>("");
+  
+  // Handle image URL validation and fallback
+  useEffect(() => {
+    if (!imageUrl) {
+      setImageError(true);
+      return;
+    }
+
+    try {
+      // Try to create a URL object to validate the URL
+      new URL(imageUrl);
+      setImageSrc(imageUrl);
+      setImageError(false);
+    } catch (e) {
+      // If URL is invalid, use a fallback image
+      setImageError(true);
+    }
+  }, [imageUrl]);
+
   const formattedDate = createdAt
     ? new Date(createdAt).toLocaleDateString(undefined, {
         year: "numeric",
@@ -36,9 +56,9 @@ export default function PropertyCard({
   return (
     <div key={id} className="bg-white rounded-xl shadow-md overflow-hidden">
       <div className="relative h-48 w-full bg-gray-100">
-        {imageUrl && !imageError ? (
+        {!imageError && imageSrc ? (
           <Image
-            src={imageUrl}
+            src={imageSrc}
             alt={title}
             fill
             className="object-cover"

@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { toast } from "react-hot-toast";
 import supabase from "@/lib/supabase/client";
 import BottomNavbar from "@/app/home/components/BottomNavigation";
 import {
@@ -69,24 +68,9 @@ export default function AddProperty() {
 
     // Type-specific validations
     if (formData.listingType === "rent") {
-      if (!formData.rent_amount) {
-        newErrors.rent_amount = "Rent amount is required";
-      } else if (
-        !/^\d+$/.test(formData.rent_amount) ||
-        Number(formData.rent_amount) <= 0
-      ) {
-        newErrors.rent_amount = "Rent must be a positive whole number";
-      }
-
-      if (formData.deposit_amount && !/^\d+$/.test(formData.deposit_amount)) {
-        newErrors.deposit_amount = "Deposit must be a whole number";
-      }
+      // Amount validation removed as per user request
     } else {
-      if (!formData.price) {
-        newErrors.price = "Price is required";
-      } else if (!/^\d+$/.test(formData.price) || Number(formData.price) <= 0) {
-        newErrors.price = "Price must be a positive whole number";
-      }
+      // Price validation removed as per user request
     }
 
     if (!formData.contact_number) {
@@ -230,15 +214,9 @@ export default function AddProperty() {
         throw new Error(errorData.error || "Failed to submit property");
       }
 
-      toast.success("Property listed successfully!");
-      // router.push("/home");  // Temporarily disabled redirect
+      router.push("/home"); // Temporarily disabled redirect
     } catch (error) {
       console.error("Error submitting property:", error);
-      toast.error(
-        error instanceof Error
-          ? error.message
-          : "Failed to list property. Please try again."
-      );
     } finally {
       setIsSubmitting(false);
     }

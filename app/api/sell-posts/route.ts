@@ -41,7 +41,8 @@ export async function POST(request: Request) {
     const title = formData.get("title") as string;
     const description = formData.get("description") as string;
     const category = formData.get("category") as string;
-    const price = parseFloat(formData.get("price") as string);
+    // Safely parse price
+    const price = Number(formData.get("price")) || 0;
     const location = formData.get("location") as string;
     const contactNumber = formData.get("contact_number") as string;
     const tags = JSON.parse(formData.get("tags") as string);
@@ -86,22 +87,36 @@ export async function POST(request: Request) {
     // Handle image uploads if any
     if (images && images.length > 0) {
       const folderPath = `${user.id}/sell_post/${postData.id}`;
+      const imageUrls: string[] = [];
 
-      // Upload all images
+      // Upload all images and collect their URLs
       await Promise.all(
         images.map(async (file) => {
           const fileName = generateUniqueName(file.name);
           const filePath = `${folderPath}/${fileName}`;
 
-          await supabase.storage.from("products").upload(filePath, file);
+          const { error: uploadError } = await supabase.storage
+            .from("products")
+            .upload(filePath, file);
+
+          if (!uploadError) {
+            // Get the public URL of the uploaded file
+            const { data: { publicUrl } } = supabase.storage
+              .from("products")
+              .getPublicUrl(filePath);
+
+            imageUrls.push(publicUrl);
+          }
         })
       );
 
-      // Store just the folder path in the database
-      await supabase
-        .from("sell_posts")
-        .update({ image_url: folderPath })
-        .eq("id", postData.id);
+      // Update the post with the image URLs array
+      if (imageUrls.length > 0) {
+        await supabase
+          .from("sell_posts")
+          .update({ image_urls: imageUrls })
+          .eq("id", postData.id);
+      }
     }
 
     // Get the updated post with the image URL
