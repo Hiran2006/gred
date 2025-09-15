@@ -74,7 +74,9 @@ export default function PropertyList({ type }: PropertyListProps) {
       let response;
 
       // Get current user ID if authenticated
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       const userId = user?.id;
 
       if (type === "rent") {
@@ -204,7 +206,7 @@ export default function PropertyList({ type }: PropertyListProps) {
 
   if (loading) {
     return (
-      <div className="w-full max-w-6xl px-4 py-8 text-center">
+      <div className="w-full px-4 py-8 text-center">
         <p>Loading properties...</p>
       </div>
     );
@@ -212,22 +214,20 @@ export default function PropertyList({ type }: PropertyListProps) {
 
   if (error) {
     return (
-      <div className="w-full max-w-6xl px-4 py-8 text-center text-red-500">
-        {error}
-      </div>
+      <div className="w-full px-4 py-8 text-center text-red-500">{error}</div>
     );
   }
 
   if (posts.length === 0) {
     return (
-      <div className="w-full max-w-6xl px-4 py-8 text-center text-gray-500">
+      <div className="w-full px-4 py-8 text-center text-gray-500">
         No properties found.
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-6xl px-4 py-8 space-y-8">
+    <div className="w-full px-4 py-8 space-y-8 mb-15">
       <div
         className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 ${type}`}
       >
@@ -258,7 +258,7 @@ export default function PropertyList({ type }: PropertyListProps) {
             Previous
           </button>
 
-          <span className="text-sm text-gray-600">
+          <span className="text-sm text-gray-600 text-center">
             Page {currentPage + 1} of {Math.max(1, totalPages)}
           </span>
 
