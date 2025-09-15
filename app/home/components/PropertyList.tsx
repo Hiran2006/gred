@@ -20,7 +20,6 @@ type PropertyPost = {
 };
 
 type PropertyListProps = {
-  className?: string;
   type: "rent" | "sell";
 };
 
@@ -50,10 +49,7 @@ type SellPostRow = {
   created_at: string;
 };
 
-export default function PropertyList({
-  className = "",
-  type,
-}: PropertyListProps) {
+export default function PropertyList({ type }: PropertyListProps) {
   const [posts, setPosts] = useState<PropertyPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -77,34 +73,50 @@ export default function PropertyList({
       let error: unknown = null;
       let response;
 
+      // Get current user ID if authenticated
+      const { data: { user } } = await supabase.auth.getUser();
+      const userId = user?.id;
+
       if (type === "rent") {
-        response = await supabase
+        let query = supabase
           .from("rent_posts")
           .select(
             "id, title, description, category, rent_amount, deposit_amount, image_urls, location, contact_number, created_at",
             { count: "exact" }
           )
-          .neq("user_id", (await supabase.auth.getUser()).data.user?.id)
           .eq("is_active", true)
           .order("created_at", { ascending: false })
           .range(
             currentPage * postsPerPage,
             (currentPage + 1) * postsPerPage - 1
           );
+
+        // Only add user_id filter if user is authenticated
+        if (userId) {
+          query = query.neq("user_id", userId);
+        }
+
+        response = await query;
       } else {
-        response = await supabase
+        let query = supabase
           .from("sell_posts")
           .select(
             "id, title, description, category, price, image_urls, location, contact_number, created_at",
             { count: "exact" }
           )
-          .neq("user_id", (await supabase.auth.getUser()).data.user?.id)
           .eq("is_active", true)
           .order("created_at", { ascending: false })
           .range(
             currentPage * postsPerPage,
             (currentPage + 1) * postsPerPage - 1
           );
+
+        // Only add user_id filter if user is authenticated
+        if (userId) {
+          query = query.neq("user_id", userId);
+        }
+
+        response = await query;
       }
 
       data = response?.data || [];
@@ -217,7 +229,7 @@ export default function PropertyList({
   return (
     <div className="w-full max-w-6xl px-4 py-8 space-y-8">
       <div
-        className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 ${className}`}
+        className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 ${type}`}
       >
         {posts.map((post) => (
           <PropertyCard

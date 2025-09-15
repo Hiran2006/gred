@@ -9,11 +9,6 @@ type TabType = "buy" | "rent";
 export default function Home() {
   const [activeTab, setActiveTab] = useState<TabType>("buy");
 
-  const handleRequestProperty = (id: number) => {
-    console.log("Request property:", id);
-    // Add your request logic here
-  };
-
   return (
     <div className="flex flex-col items-center min-h-screen pb-20">
       <Header />
@@ -59,9 +54,9 @@ export default function Home() {
       {/* Content based on active tab */}
       <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
         {activeTab === "buy" ? (
-          <PropertyList type="sell" onRequestProperty={handleRequestProperty} />
+          <PropertyList type="sell" />
         ) : (
-          <PropertyList type="rent" onRequestProperty={handleRequestProperty} />
+          <PropertyList type="rent" />
         )}
       </div>
 
