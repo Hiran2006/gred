@@ -1,11 +1,18 @@
 import Image from "next/image";
 import { MagnifyingGlassIcon, MapPinIcon } from "@heroicons/react/24/outline";
+import ProfileDropdown from "../../../components/ui/ProfileDropdown";
 
 export default function Header() {
   return (
     <>
-      <div className="flex justify-center items-center mt-8 mb-10">
-        <Image src="/logo_black.png" alt="logo" width={180} height={50} />
+      <div className="grid grid-cols-3 items-center box-border w-full gap-4 p-6">
+        <div></div>
+        <div className="flex justify-center">
+          <Image src="/logo_black.png" alt="logo" width={180} height={50} />
+        </div>
+        <div className="flex justify-end">
+          <ProfileDropdown />
+        </div>
       </div>
       <div className="flex justify-center items-center w-full max-w-2xl px-4 mb-8 gap-4">
         <div className="flex-1">
