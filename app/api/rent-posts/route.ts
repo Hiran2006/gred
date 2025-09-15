@@ -5,7 +5,7 @@ import supabase from "@/lib/supabase/server";
 const generateUniqueName = (originalName: string) => {
   const timestamp = Date.now();
   const random = Math.floor(Math.random() * 10000);
-  const ext = originalName.split('.').pop();
+  const ext = originalName.split(".").pop();
   return `${timestamp}-${random}.${ext}`;
 };
 
@@ -59,27 +59,29 @@ export async function POST(request: Request) {
 
     // First, create the rent post to get the ID for the upload path
     const { data: postData, error: postError } = await supabase
-      .from('rent_posts')
-      .insert([{
-        user_id: user.id,
-        title,
-        description,
-        category,
-        rent_amount: rentAmount,
-        deposit_amount: depositAmount,
-        location,
-        contact_number: contactNumber,
-        tags,
-        is_active: true,
-        views_count: 0,
-      }])
+      .from("rent_posts")
+      .insert([
+        {
+          user_id: user.id,
+          title,
+          description,
+          category,
+          rent_amount: rentAmount,
+          deposit_amount: depositAmount,
+          location,
+          contact_number: contactNumber,
+          tags,
+          is_active: true,
+          views_count: 0,
+        },
+      ])
       .select()
       .single();
 
     if (postError || !postData) {
-      console.error('Error creating rent post:', postError);
+      console.error("Error creating rent post:", postError);
       return NextResponse.json(
-        { error: 'Failed to create rent post', details: postError?.message },
+        { error: "Failed to create rent post", details: postError?.message },
         { status: 500 }
       );
     }
@@ -88,40 +90,42 @@ export async function POST(request: Request) {
     if (images && images.length > 0) {
       const folderPath = `${user.id}/rent_post/${postData.id}`;
       const imageUrls: string[] = [];
-      
+
       // Upload all images and collect their URLs
-      await Promise.all(images.map(async (file) => {
-        const fileName = generateUniqueName(file.name);
-        const filePath = `${folderPath}/${fileName}`;
-        
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('products')
-          .upload(filePath, file);
-          
-        if (!uploadError) {
-          // Get the public URL of the uploaded file
-          const { data: { publicUrl } } = supabase.storage
-            .from('products')
-            .getPublicUrl(filePath);
-            
-          imageUrls.push(publicUrl);
-        }
-      }));
-      
+      await Promise.all(
+        images.map(async (file) => {
+          const fileName = generateUniqueName(file.name);
+          const filePath = `${folderPath}/${fileName}`;
+
+          const { error: uploadError } = await supabase.storage
+            .from("products")
+            .upload(filePath, file);
+
+          if (!uploadError) {
+            // Get the public URL of the uploaded file
+            const {
+              data: { publicUrl },
+            } = supabase.storage.from("products").getPublicUrl(filePath);
+
+            imageUrls.push(publicUrl);
+          }
+        })
+      );
+
       // Update the post with the image URLs array
       if (imageUrls.length > 0) {
         await supabase
-          .from('rent_posts')
+          .from("rent_posts")
           .update({ image_urls: imageUrls })
-          .eq('id', postData.id);
+          .eq("id", postData.id);
       }
     }
 
     // Get the updated post with the image URL
     const { data: updatedPost } = await supabase
-      .from('rent_posts')
-      .select('*')
-      .eq('id', postData.id)
+      .from("rent_posts")
+      .select("*")
+      .eq("id", postData.id)
       .single();
 
     return NextResponse.json(

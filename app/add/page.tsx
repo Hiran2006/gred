@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import supabase from "@/lib/supabase/client";
 import BottomNavbar from "@/app/home/components/BottomNavigation";

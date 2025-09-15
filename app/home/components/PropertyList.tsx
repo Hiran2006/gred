@@ -22,7 +22,6 @@ type PropertyPost = {
 type PropertyListProps = {
   className?: string;
   type: "rent" | "sell";
-  onRequestProperty?: (id: number) => void;
 };
 
 // Row shapes from Supabase for each table (minimal fields used here)
@@ -54,7 +53,6 @@ type SellPostRow = {
 export default function PropertyList({
   className = "",
   type,
-  onRequestProperty,
 }: PropertyListProps) {
   const [posts, setPosts] = useState<PropertyPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -71,47 +69,61 @@ export default function PropertyList({
   const loadPosts = useCallback(async () => {
     try {
       setLoading(true);
+      setError(null);
+      console.log(`Loading ${type} posts, page ${currentPage + 1}`);
 
       let data: RentPostRow[] | SellPostRow[] | null = null;
       let count: number | null = null;
       let error: unknown = null;
+      let response;
 
       if (type === "rent") {
-        const res = await supabase
+        response = await supabase
           .from("rent_posts")
           .select(
             "id, title, description, category, rent_amount, deposit_amount, image_urls, location, contact_number, created_at",
             { count: "exact" }
           )
+          .neq("user_id", (await supabase.auth.getUser()).data.user?.id)
           .eq("is_active", true)
           .order("created_at", { ascending: false })
           .range(
             currentPage * postsPerPage,
             (currentPage + 1) * postsPerPage - 1
           );
-        data = res.data;
-        count = res.count;
-        error = res.error;
       } else {
-        const res = await supabase
+        response = await supabase
           .from("sell_posts")
           .select(
             "id, title, description, category, price, image_urls, location, contact_number, created_at",
             { count: "exact" }
           )
+          .neq("user_id", (await supabase.auth.getUser()).data.user?.id)
           .eq("is_active", true)
           .order("created_at", { ascending: false })
           .range(
             currentPage * postsPerPage,
             (currentPage + 1) * postsPerPage - 1
           );
-        data = res.data;
-        count = res.count;
-        error = res.error;
       }
 
+      data = response?.data || [];
+      count = response?.count || 0;
+      error = response?.error;
+
+      console.log("Database response:", {
+        data: data ? `Received ${data.length} items` : "No data",
+        count,
+        error: error ? "Error occurred" : "No error",
+        supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+      });
+
       if (error) {
-        console.error("Database query error:", error);
+        console.error("Database query error:", {
+          message: error instanceof Error ? error.message : "Unknown error",
+          name: error instanceof Error ? error.name : "No error name",
+          stack: error instanceof Error ? error.stack : "No stack trace",
+        });
         throw error;
       }
 
@@ -156,16 +168,19 @@ export default function PropertyList({
       setPosts(postsWithType);
       setTotalPages(Math.ceil((count || 0) / postsPerPage));
     } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
       console.error("Error in loadPosts:", {
-        error,
-        message: error instanceof Error ? error.message : "Unknown error",
-        stack: error instanceof Error ? error.stack : undefined,
+        message: errorMessage,
+        name: error instanceof Error ? error.name : "No error name",
+        stack: error instanceof Error ? error.stack : "No stack trace",
+        type,
+        currentPage,
+        postsPerPage,
+        supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
       });
-      setError(
-        `Failed to load properties. ${
-          error instanceof Error ? error.message : "Please try again later."
-        }`
-      );
+
+      setError(`Failed to load properties. ${errorMessage}`);
     } finally {
       setLoading(false);
     }
@@ -174,12 +189,6 @@ export default function PropertyList({
   useEffect(() => {
     loadPosts();
   }, [loadPosts]);
-
-  const handleRequest = (id: number) => {
-    if (onRequestProperty) {
-      onRequestProperty(id);
-    }
-  };
 
   if (loading) {
     return (
@@ -221,7 +230,6 @@ export default function PropertyList({
             depositAmount={type === "rent" ? post.deposit_amount : undefined}
             imageUrl={post.image_urls?.[0] || "/placeholder-property.jpg"}
             createdAt={post.created_at}
-            onRequest={() => handleRequest(Number(post.id))}
           />
         ))}
       </div>

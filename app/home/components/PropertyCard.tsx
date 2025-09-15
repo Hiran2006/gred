@@ -1,17 +1,17 @@
 "use client";
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 type PropertyCardProps = {
   id: string;
   title: string;
   location: string;
   price?: number;
-  postType: 'rent' | 'sell';
+  postType: "rent" | "sell";
   depositAmount?: number;
   imageUrl: string;
   createdAt?: string;
-  onRequest?: () => void;
 };
 
 export default function PropertyCard({
@@ -23,11 +23,15 @@ export default function PropertyCard({
   depositAmount,
   imageUrl,
   createdAt,
-  onRequest,
 }: PropertyCardProps) {
+  const router = useRouter();
+
+  const handleCardClick = () => {
+    router.push(`/property/${id}`);
+  };
   const [imageError, setImageError] = useState(true);
   const [imageSrc, setImageSrc] = useState<string>("");
-  
+
   // Handle image URL validation and fallback
   useEffect(() => {
     if (!imageUrl) {
@@ -40,7 +44,7 @@ export default function PropertyCard({
       new URL(imageUrl);
       setImageSrc(imageUrl);
       setImageError(false);
-    } catch (e) {
+    } catch {
       // If URL is invalid, use a fallback image
       setImageError(true);
     }
@@ -54,7 +58,11 @@ export default function PropertyCard({
       })
     : null;
   return (
-    <div key={id} className="bg-white rounded-xl shadow-md overflow-hidden">
+    <div
+      key={id}
+      className="bg-white rounded-xl shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-shadow duration-200"
+      onClick={handleCardClick}
+    >
       <div className="relative h-48 w-full bg-gray-100">
         {!imageError && imageSrc ? (
           <Image
@@ -78,36 +86,46 @@ export default function PropertyCard({
         </h3>
         <p className="text-gray-600 text-sm">{location}</p>
         {formattedDate && (
-          <p className="text-gray-500 text-xs mt-1">Posted on {formattedDate}</p>
+          <p className="text-gray-500 text-xs mt-1">
+            Posted on {formattedDate}
+          </p>
         )}
         <div className="mt-3 flex justify-between items-center">
           <div>
             <div>
               <span className="text-sm text-gray-500">
-                {postType === 'rent' ? 'Rent' : 'Price'}
+                {postType === "rent" ? "Rent" : "Price"}
               </span>
               <p className="text-lg font-bold text-blue-600">
                 ₹{price?.toLocaleString()}
-                {postType === 'rent' && (
-                  <span className="text-sm font-normal text-gray-500">/month</span>
+                {postType === "rent" && (
+                  <span className="text-sm font-normal text-gray-500">
+                    /month
+                  </span>
                 )}
               </p>
-              {postType === 'rent' && depositAmount && depositAmount > 0 && (
+              {postType === "rent" && depositAmount && depositAmount > 0 && (
                 <p className="text-sm text-gray-600">
-                  Deposit: <span className="font-medium">₹{depositAmount.toLocaleString()}</span>
+                  Deposit:{" "}
+                  <span className="font-medium">
+                    ₹{depositAmount.toLocaleString()}
+                  </span>
                 </p>
               )}
             </div>
           </div>
-          <button
-            onClick={onRequest}
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          <a
+            href={`/property/${id}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              // Let the default navigation handle the click
+            }}
+            className="px-4 py-2 text-center text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
           >
-            Contact Owner
-          </button>
+            More Info
+          </a>
         </div>
       </div>
     </div>
   );
 }
-
