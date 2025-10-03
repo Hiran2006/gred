@@ -6,7 +6,6 @@ import {
   Cog6ToothIcon,
   ArrowLeftOnRectangleIcon,
 } from "@heroicons/react/24/outline";
-import { useRouter } from "next/navigation";
 import supabase from "@/lib/supabase/client";
 import {
   DropdownMenu,
@@ -16,7 +15,6 @@ import {
 
 export default function ProfileDropdown() {
   const [userEmail, setUserEmail] = useState<string | null>(null);
-  const router = useRouter();
 
   useEffect(() => {
     const getUserData = async () => {

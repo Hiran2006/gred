@@ -1,16 +1,8 @@
 import Image from "next/image";
-import { MagnifyingGlassIcon, MapPinIcon } from "@heroicons/react/24/outline";
+import { MagnifyingGlassIcon} from "@heroicons/react/24/outline";
 import ProfileDropdown from "../../../components/ui/ProfileDropdown";
 
-type HeaderProps = {
-  activeTab?: "sell" | "rent";
-  onTabChange?: (tab: "sell" | "rent") => void;
-};
-
-export default function Header({
-  activeTab = "sell",
-  onTabChange,
-}: HeaderProps) {
+export default function Header() {
   return (
     <div className="relative bg-gradient-to-br from-gray-900 to-gray-800 text-white pb-16 md:pb-24">
       {/* Background Overlay */}
