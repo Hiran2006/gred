@@ -187,21 +187,7 @@ export default function PropertyDetailsPage() {
               <button
                 onClick={async (e) => {
                   e.preventDefault();
-                  try {
-                    // Create or get existing conversation with the property owner
-                    const { data, error } = await supabase
-                      .rpc("get_or_create_conversation", {
-                        other_user_id: property.user_id,
-                      });
-
-                    if (error) throw error;
-
-                    // Navigate to the chat page with the conversation ID
-                    router.push(`/chat?conversation=${data.conversation_id}`);
-                  } catch (error) {
-                    console.error("Error starting chat:", error);
-                    alert("Failed to start chat. Please try again.");
-                  }
+                  router.push(`/chat?conversation=${params.id}`);
                 }}
                 className="flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex-1 sm:flex-none"
               >
