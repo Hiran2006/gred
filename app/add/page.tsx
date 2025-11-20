@@ -3,7 +3,6 @@
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import supabase from "@/lib/supabase/client";
-import BottomNavbar from "@/app/home/components/BottomNavigation";
 import {
   PropertyTypeToggle,
   ImageUploader,
@@ -307,7 +306,6 @@ export default function AddProperty() {
           />
         </form>
       </div>
-      <BottomNavbar />
     </div>
   );
 }
