@@ -62,26 +62,6 @@ export async function fetchRentPostById(id: string) {
   }
 }
 
-export async function createRentPost(post: Omit<RentPost, 'id' | 'created_at' | 'views_count'>) {
-  try {
-    const { data, error } = await supabase
-      .from('rent_posts')
-      .insert([post])
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Error creating rent post:', error);
-      throw error;
-    }
-
-    return data;
-  } catch (error) {
-    console.error('Error in createRentPost:', error);
-    throw error;
-  }
-}
-
 export async function updateRentPost(id: string, updates: Partial<RentPost>) {
   try {
     const { data, error } = await supabase
