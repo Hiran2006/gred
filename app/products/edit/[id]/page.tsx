@@ -1,10 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useParams } from 'next/navigation';
+import Image from 'next/image';
 import { fetchRentPostById, updateRentPost } from '../../services/rentPostService';
 
-export default function EditProductPage({ params }: { params: { id: string } }) {
+export default function EditProductPage() {
+  const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
@@ -23,7 +25,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
   useEffect(() => {
     const loadPost = async () => {
       try {
-        const post = await fetchRentPostById(params.id);
+        const post = await fetchRentPostById(id);
         setFormData({
           title: post.title || '',
           description: post.description || '',
@@ -44,7 +46,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
     };
 
     loadPost();
-  }, [params.id]);
+  }, [id]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target as HTMLInputElement;
@@ -73,7 +75,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
         deposit_amount: formData.deposit_amount ? Number(formData.deposit_amount) : 0,
       };
       
-      await updateRentPost(params.id, updates);
+      await updateRentPost(id, updates);
       router.push('/products');
       router.refresh();
     } catch (error) {
@@ -239,7 +241,7 @@ export default function EditProductPage({ params }: { params: { id: string } }) 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {formData.image_urls.map((url, index) => (
               <div key={index} className="relative group">
-                <img
+                <Image
                   src={url}
                   alt={`Property ${index + 1}`}
                   className="w-full h-32 object-cover rounded-md"
