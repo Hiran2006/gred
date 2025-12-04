@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Image from "next/image";
-import { ArrowLeft, Phone, MessageSquare } from "lucide-react";
+import { ArrowLeft, Phone, MessageSquare, Mail } from "lucide-react";
 import supabase from "@/lib/supabase/client";
 
 type PropertyDetails = {
@@ -176,12 +176,12 @@ export default function PropertyDetailsPage() {
 
           <div className="mt-8 border-t border-gray-200 pt-6">
             <h2 className="text-xl font-semibold mb-4">Contact Information</h2>
-            <div className="flex items-center space-x-4 mt-6">
+            <div className="flex items-center space-x-4 mt-6 flex-wrap gap-2">
               <a
                 href={`tel:${property.contact_number}`}
-                className="flex items-center justify-center px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex-1 sm:flex-none"
+                className="flex items-center justify-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex-1 sm:flex-none text-sm sm:text-base"
               >
-                <Phone className="h-5 w-5 mr-2" />
+                <Phone className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
                 Call Now
               </a>
               <button
@@ -189,10 +189,21 @@ export default function PropertyDetailsPage() {
                   e.preventDefault();
                   router.push(`/chat?conversation=${params.id}`);
                 }}
-                className="flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex-1 sm:flex-none"
+                className="flex items-center justify-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex-1 sm:flex-none text-sm sm:text-base"
               >
-                <MessageSquare className="h-5 w-5 mr-2" />
+                <MessageSquare className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
                 Message
+              </button>
+              <button
+                onClick={() => {
+                  // You can implement the request info functionality here
+                  // For example, open a modal or navigate to a request form
+                  alert('Request info functionality will be implemented here');
+                }}
+                className="flex items-center justify-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex-1 sm:flex-none text-sm sm:text-base"
+              >
+                <Mail className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
+                Request Info
               </button>
             </div>
             {property.contact_number && (
