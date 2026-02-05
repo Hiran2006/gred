@@ -1,25 +1,28 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
-import Image from 'next/image';
-import { fetchRentPostById, updateRentPost } from '../../services/rentPostService';
+import { useEffect, useState } from "react";
+import { useRouter, useParams } from "next/navigation";
+import Image from "next/image";
+import {
+  fetchRentPostById,
+  updateRentPost,
+} from "../../services/rentPostService";
 
 export default function EditProductPage() {
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    category: '',
-    rent_amount: '',
-    deposit_amount: '',
-    location: '',
-    contact_number: '',
+    title: "",
+    description: "",
+    category: "",
+    rent_amount: "",
+    deposit_amount: "",
+    location: "",
+    contact_number: "",
     is_active: true,
     tags: [] as string[],
-    image_urls: [] as string[]
+    image_urls: [] as string[],
   });
 
   useEffect(() => {
@@ -27,19 +30,19 @@ export default function EditProductPage() {
       try {
         const post = await fetchRentPostById(id);
         setFormData({
-          title: post.title || '',
-          description: post.description || '',
-          category: post.category || '',
+          title: post.title || "",
+          description: post.description || "",
+          category: post.category || "",
           rent_amount: post.rent_amount.toString(),
-          deposit_amount: post.deposit_amount?.toString() || '',
-          location: post.location || '',
-          contact_number: post.contact_number || '',
+          deposit_amount: post.deposit_amount?.toString() || "",
+          location: post.location || "",
+          contact_number: post.contact_number || "",
           is_active: post.is_active,
           tags: post.tags || [],
-          image_urls: post.image_urls || []
+          image_urls: post.image_urls || [],
         });
       } catch (error) {
-        console.error('Error loading post:', error);
+        console.error("Error loading post:", error);
       } finally {
         setLoading(false);
       }
@@ -48,38 +51,44 @@ export default function EditProductPage() {
     loadPost();
   }, [id]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ) => {
     const { name, value, type } = e.target as HTMLInputElement;
-    
-    if (type === 'checkbox') {
+
+    if (type === "checkbox") {
       const checked = (e.target as HTMLInputElement).checked;
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        [name]: checked
+        [name]: checked,
       }));
     } else {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
-        [name]: value
+        [name]: value,
       }));
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       const updates = {
         ...formData,
         rent_amount: Number(formData.rent_amount),
-        deposit_amount: formData.deposit_amount ? Number(formData.deposit_amount) : 0,
+        deposit_amount: formData.deposit_amount
+          ? Number(formData.deposit_amount)
+          : 0,
       };
-      
+
       await updateRentPost(id, updates);
-      router.push('/products');
+      router.push("/products");
       router.refresh();
     } catch (error) {
-      console.error('Error updating post:', error);
+      console.error("Error updating post:", error);
     }
   };
 
@@ -94,7 +103,7 @@ export default function EditProductPage() {
   return (
     <div className="max-w-4xl mx-auto p-6">
       <h1 className="text-2xl font-bold mb-6">Edit Property</h1>
-      
+
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Basic Information */}
@@ -228,7 +237,10 @@ export default function EditProductPage() {
                 onChange={handleChange}
                 className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
               />
-              <label htmlFor="is_active" className="ml-2 block text-sm text-gray-700">
+              <label
+                htmlFor="is_active"
+                className="ml-2 block text-sm text-gray-700"
+              >
                 Active Listing
               </label>
             </div>
@@ -243,6 +255,8 @@ export default function EditProductPage() {
               <div key={index} className="relative group">
                 <Image
                   src={url}
+                  width={400}
+                  height={400}
                   alt={`Property ${index + 1}`}
                   className="w-full h-32 object-cover rounded-md"
                 />
@@ -251,12 +265,23 @@ export default function EditProductPage() {
                   onClick={() => {
                     const newImages = [...formData.image_urls];
                     newImages.splice(index, 1);
-                    setFormData(prev => ({ ...prev, image_urls: newImages }));
+                    setFormData((prev) => ({ ...prev, image_urls: newImages }));
                   }}
                   className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
                   </svg>
                 </button>
               </div>
@@ -267,11 +292,21 @@ export default function EditProductPage() {
                 className="text-gray-400 hover:text-gray-500"
                 onClick={() => {
                   // TODO: Implement image upload
-                  alert('Image upload functionality to be implemented');
+                  alert("Image upload functionality to be implemented");
                 }}
               >
-                <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                <svg
+                  className="h-8 w-8"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                  />
                 </svg>
                 <span className="text-xs mt-1 block">Add Image</span>
               </button>
@@ -283,7 +318,7 @@ export default function EditProductPage() {
         <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
           <button
             type="button"
-            onClick={() => router.push('/products')}
+            onClick={() => router.push("/products")}
             className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
           >
             Cancel

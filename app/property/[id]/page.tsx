@@ -30,6 +30,30 @@ export default function PropertyDetailsPage() {
   const [error, setError] = useState<string | null>(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
+  const onRequest = async () => {
+    // You can implement the request info functionality here
+    // For example, open a modal or navigate to a request form
+
+    try {
+      if (confirm("Are you sure you want to request info for this property?")) {
+        // TODO: Implement request info functionality
+        alert("Requesting info for property: " + params.id);
+        const { data, error } = await supabase.from("rent_requests").insert({
+          product_id: Number(params.id),
+          request_by: (await supabase.auth.getUser()).data.user?.id,
+          status: "pending",
+        });
+
+        if (error) {
+          console.log(error);
+        }
+      }
+    } catch (err) {
+      console.error("Error requesting info:", err);
+      alert("Failed to request info. Please try again.");
+    }
+  };
+
   useEffect(() => {
     const fetchProperty = async () => {
       try {
@@ -195,15 +219,11 @@ export default function PropertyDetailsPage() {
                 Message
               </button>
               <button
-                onClick={() => {
-                  // You can implement the request info functionality here
-                  // For example, open a modal or navigate to a request form
-                  alert('Request info functionality will be implemented here');
-                }}
+                onClick={onRequest}
                 className="flex items-center justify-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors flex-1 sm:flex-none text-sm sm:text-base"
               >
                 <Mail className="h-4 w-4 sm:h-5 sm:w-5 mr-1 sm:mr-2" />
-                Request Info
+                Request
               </button>
             </div>
             {property.contact_number && (
