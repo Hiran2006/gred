@@ -20,9 +20,7 @@ type PropertyPost = {
 };
 
 type PropertyListProps = {
-  className?: string;
   type: "rent" | "sell";
-  onRequestProperty?: (id: number) => void;
 };
 
 // Row shapes from Supabase for each table (minimal fields used here)
@@ -51,11 +49,7 @@ type SellPostRow = {
   created_at: string;
 };
 
-export default function PropertyList({
-  className = "",
-  type,
-  onRequestProperty,
-}: PropertyListProps) {
+export default function PropertyList({ type }: PropertyListProps) {
   const [posts, setPosts] = useState<PropertyPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -71,13 +65,22 @@ export default function PropertyList({
   const loadPosts = useCallback(async () => {
     try {
       setLoading(true);
+      setError(null);
+      console.log(`Loading ${type} posts, page ${currentPage + 1}`);
 
       let data: RentPostRow[] | SellPostRow[] | null = null;
       let count: number | null = null;
       let error: unknown = null;
+      let response;
+
+      // Get current user ID if authenticated
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      const userId = user?.id;
 
       if (type === "rent") {
-        const res = await supabase
+        let query = supabase
           .from("rent_posts")
           .select(
             "id, title, description, category, rent_amount, deposit_amount, image_urls, location, contact_number, created_at",
@@ -89,11 +92,15 @@ export default function PropertyList({
             currentPage * postsPerPage,
             (currentPage + 1) * postsPerPage - 1
           );
-        data = res.data;
-        count = res.count;
-        error = res.error;
+
+        // Only add user_id filter if user is authenticated
+        if (userId) {
+          query = query.neq("user_id", userId);
+        }
+
+        response = await query;
       } else {
-        const res = await supabase
+        let query = supabase
           .from("sell_posts")
           .select(
             "id, title, description, category, price, image_urls, location, contact_number, created_at",
@@ -105,13 +112,32 @@ export default function PropertyList({
             currentPage * postsPerPage,
             (currentPage + 1) * postsPerPage - 1
           );
-        data = res.data;
-        count = res.count;
-        error = res.error;
+
+        // Only add user_id filter if user is authenticated
+        if (userId) {
+          query = query.neq("user_id", userId);
+        }
+
+        response = await query;
       }
 
+      data = response?.data || [];
+      count = response?.count || 0;
+      error = response?.error;
+
+      console.log("Database response:", {
+        data: data ? `Received ${data.length} items` : "No data",
+        count,
+        error: error ? "Error occurred" : "No error",
+        supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+      });
+
       if (error) {
-        console.error("Database query error:", error);
+        console.error("Database query error:", {
+          message: error instanceof Error ? error.message : "Unknown error",
+          name: error instanceof Error ? error.name : "No error name",
+          stack: error instanceof Error ? error.stack : "No stack trace",
+        });
         throw error;
       }
 
@@ -156,16 +182,19 @@ export default function PropertyList({
       setPosts(postsWithType);
       setTotalPages(Math.ceil((count || 0) / postsPerPage));
     } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
       console.error("Error in loadPosts:", {
-        error,
-        message: error instanceof Error ? error.message : "Unknown error",
-        stack: error instanceof Error ? error.stack : undefined,
+        message: errorMessage,
+        name: error instanceof Error ? error.name : "No error name",
+        stack: error instanceof Error ? error.stack : "No stack trace",
+        type,
+        currentPage,
+        postsPerPage,
+        supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
       });
-      setError(
-        `Failed to load properties. ${
-          error instanceof Error ? error.message : "Please try again later."
-        }`
-      );
+
+      setError(`Failed to load properties. ${errorMessage}`);
     } finally {
       setLoading(false);
     }
@@ -175,15 +204,9 @@ export default function PropertyList({
     loadPosts();
   }, [loadPosts]);
 
-  const handleRequest = (id: number) => {
-    if (onRequestProperty) {
-      onRequestProperty(id);
-    }
-  };
-
   if (loading) {
     return (
-      <div className="w-full max-w-6xl px-4 py-8 text-center">
+      <div className="w-full px-4 py-8 text-center">
         <p>Loading properties...</p>
       </div>
     );
@@ -191,24 +214,22 @@ export default function PropertyList({
 
   if (error) {
     return (
-      <div className="w-full max-w-6xl px-4 py-8 text-center text-red-500">
-        {error}
-      </div>
+      <div className="w-full px-4 py-8 text-center text-red-500">{error}</div>
     );
   }
 
   if (posts.length === 0) {
     return (
-      <div className="w-full max-w-6xl px-4 py-8 text-center text-gray-500">
+      <div className="w-full px-4 py-8 text-center text-gray-500">
         No properties found.
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-6xl px-4 py-8 space-y-8">
+    <div className="w-full px-4 py-8 space-y-8 mb-15">
       <div
-        className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 ${className}`}
+        className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 ${type}`}
       >
         {posts.map((post) => (
           <PropertyCard
@@ -221,7 +242,6 @@ export default function PropertyList({
             depositAmount={type === "rent" ? post.deposit_amount : undefined}
             imageUrl={post.image_urls?.[0] || "/placeholder-property.jpg"}
             createdAt={post.created_at}
-            onRequest={() => handleRequest(Number(post.id))}
           />
         ))}
       </div>
@@ -238,7 +258,7 @@ export default function PropertyList({
             Previous
           </button>
 
-          <span className="text-sm text-gray-600">
+          <span className="text-sm text-gray-600 text-center">
             Page {currentPage + 1} of {Math.max(1, totalPages)}
           </span>
 

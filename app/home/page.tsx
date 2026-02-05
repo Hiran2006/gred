@@ -1,69 +1,87 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import Header from "@/app/home/components/Header";
 import BottomNavbar from "@/app/home/components/BottomNavigation";
 import PropertyList from "@/app/home/components/PropertyList";
 
-type TabType = "buy" | "rent";
+type TabType = "sell" | "rent";
+
+const tabVariants = {
+  hidden: { opacity: 0, y: 10 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+  exit: { opacity: 0, y: -10, transition: { duration: 0.2 } },
+};
 
 export default function Home() {
-  const [activeTab, setActiveTab] = useState<TabType>("buy");
+  const [activeTab, setActiveTab] = useState<TabType>("sell");
+  const [scrolled, setScrolled] = useState(false);
 
-  const handleRequestProperty = (id: number) => {
-    console.log("Request property:", id);
-    // Add your request logic here
-  };
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <div className="flex flex-col items-center min-h-screen pb-20">
+    <div className="min-h-screen bg-gray-50">
       <Header />
 
-      {/* Attractive Tab Navigation */}
-      <div className="w-full bg-gradient-to-r from-blue-50 to-indigo-50 shadow-sm sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4">
-          <div className="flex">
-            <button
-              onClick={() => setActiveTab("buy")}
-              className={`relative px-6 py-4 font-medium text-sm transition-all duration-300 ${
-                activeTab === "buy"
-                  ? "text-blue-700 font-semibold"
-                  : "text-gray-600 hover:text-blue-600"
-              }`}
-            >
-              Buy
-              <span
-                className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-blue-500 to-indigo-500 transform transition-all duration-300 ${
-                  activeTab === "buy" ? "scale-x-100" : "scale-x-0"
-                }`}
-              />
-            </button>
-            <button
-              onClick={() => setActiveTab("rent")}
-              className={`relative px-6 py-4 font-medium text-sm transition-all duration-300 ${
-                activeTab === "rent"
-                  ? "text-blue-700 font-semibold"
-                  : "text-gray-600 hover:text-blue-600"
-              }`}
-            >
-              Rent
-              <span
-                className={`absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-blue-500 to-indigo-500 transform transition-all duration-300 ${
-                  activeTab === "rent" ? "scale-x-100" : "scale-x-0"
-                }`}
-              />
-            </button>
+      {/* Tab Navigation */}
+      <div
+        className={`sticky top-0 z-20 transition-all duration-300 ${
+          scrolled ? "bg-white shadow-md" : "bg-transparent"
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex justify-center -mt-4 mb-4">
+            <div className="inline-flex bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100">
+              {["sell", "rent"].map((tab) => (
+                <button
+                  key={tab}
+                  onClick={() => setActiveTab(tab as TabType)}
+                  className={`relative px-6 py-3 font-medium text-sm transition-all duration-300 ${
+                    activeTab === tab
+                      ? "text-white bg-black"
+                      : "text-gray-600 hover:bg-gray-50"
+                  }`}
+                >
+                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                  {activeTab === tab && (
+                    <motion.span
+                      layoutId="activeTab"
+                      className="absolute bottom-0 left-0 w-full h-0.5 bg-gray-900"
+                      initial={false}
+                      transition={{
+                        type: "spring",
+                        stiffness: 500,
+                        damping: 30,
+                      }}
+                    />
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Content based on active tab */}
-      <div className="w-full max-w-7xl px-4 sm:px-6 lg:px-8 py-6">
-        {activeTab === "buy" ? (
-          <PropertyList type="sell" onRequestProperty={handleRequestProperty} />
-        ) : (
-          <PropertyList type="rent" onRequestProperty={handleRequestProperty} />
-        )}
-      </div>
+      {/* Property List */}
+      <main className="max-w-7xl mx-auto px-6 py-8 min-h-70 bg-white">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            variants={tabVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+          >
+            <PropertyList type={activeTab} />
+          </motion.div>
+        </AnimatePresence>
+      </main>
 
       <BottomNavbar />
     </div>
